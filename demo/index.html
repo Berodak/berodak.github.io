@@ -3,249 +3,175 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Démo MonSalon : réservation en ligne pour le salon fictif Maison Ayaba.">
-<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
-<title>Prototype Salon Ayaba</title>
+<meta name="description" content="Démo Maison Ayaba : réservation en ligne pour salon de beauté à Cotonou.">
+<style>:root{color-scheme:light dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Maison Ayaba</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Instrument+Serif:ital@0;1&family=Figtree:wght@400;500;600;700&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
-/* Layout : une colonne façon appli mobile sur un fond indigo vivant ; hero plein cadre, cartes de verre, barre de réservation collante. Look sombre assumé (un seul thème). */
+/* Salon de beauté — clair et élégant. Blush chaud, encre prune, accent prune + or. Emplacements photo soignés. */
 :root{
-  --night:#0E0B2E; --indigo:#1E1A5E; --glass:rgba(255,255,255,.07); --glass-2:rgba(255,255,255,.12);
-  --line:rgba(255,255,255,.14); --ink:#F6F2FF; --muted:#B9B3DC;
-  --saffron:#F5B731; --coral:#FF7A59; --rose:#F2A7C3; --ok:#6EE7A8;
-  --display:"Syne", "Trebuchet MS", system-ui, sans-serif;
-  --serif:"Instrument Serif", Georgia, serif;
-  --body:"Figtree", "Segoe UI", system-ui, sans-serif;
-  color-scheme:dark;
+  --paper:#F7F2EF; --card:#FFFFFF; --ink:#271A20; --muted:#8B7580; --line:#ECE0E4;
+  --plum:#7A2E55; --plum-soft:#F4E5ED; --gold:#C2954A; --rose:#E9A7BE; --ok:#2E8B64; --ok-soft:#DCF1E7; --warn:#A9611B;
+  --display:"Cormorant Garamond",Georgia,serif; --body:"Figtree","Segoe UI",system-ui,sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);
 }
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#17101400; --paper:#190F14; --card:#241820; --ink:#F7EEF2; --muted:#B79FAA; --line:#39272F;
+  --plum:#E79ABE; --plum-soft:#37202E; --gold:#E0B96A; --rose:#E9A7BE; --ok:#6FD4A1; --ok-soft:#163528; --warn:#E3A85C; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#190F14; --card:#241820; --ink:#F7EEF2; --muted:#B79FAA; --line:#39272F;
+  --plum:#E79ABE; --plum-soft:#37202E; --gold:#E0B96A; --rose:#E9A7BE; --ok:#6FD4A1; --ok-soft:#163528; --warn:#E3A85C; color-scheme:dark}
 *{box-sizing:border-box}
-[hidden]{display:none!important}
-html{background:var(--night)}
-body{background:var(--night);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;
-  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:16px 110px;overflow-x:hidden}
-.aura{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.aura i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55}
-.aura i:nth-child(1){width:420px;height:420px;background:#4B3BD6;top:-120px;left:-120px}
-.aura i:nth-child(2){width:360px;height:360px;background:var(--coral);top:30%;right:-160px;opacity:.35}
-.aura i:nth-child(3){width:380px;height:380px;background:var(--saffron);bottom:-160px;left:10%;opacity:.25}
-@media (prefers-reduced-motion:no-preference){
-  .aura i{animation:drift 18s ease-in-out infinite alternate}
-  .aura i:nth-child(2){animation-duration:22s}.aura i:nth-child(3){animation-duration:26s}
-  @keyframes drift{to{transform:translate(60px,40px) scale(1.15)}}
-  .rise{animation:rise .8s cubic-bezier(.2,.8,.2,1) both}
-  .d1{animation-delay:.08s}.d2{animation-delay:.16s}.d3{animation-delay:.24s}.d4{animation-delay:.32s}
-  @keyframes rise{from{opacity:.001;transform:translateY(18px)}to{opacity:1;transform:none}}
-}
+html,body{overflow-x:hidden;overflow-x:clip}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 108px}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
-button:focus-visible,input:focus-visible{outline:3px solid var(--saffron);outline-offset:2px}
-.wrap{position:relative;z-index:1;max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
-.switch{display:grid;grid-template-columns:1fr 1fr;background:var(--glass);border:1px solid var(--line);border-radius:999px;padding:4px;backdrop-filter:blur(12px)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--plum);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;line-height:1.05;letter-spacing:-.01em}
+.wrap{max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.switch{display:grid;grid-template-columns:1fr 1fr;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px}
 .switch button{padding:10px 8px;border-radius:999px;font-weight:600;color:var(--muted);font-size:14px}
-.switch button[aria-pressed="true"]{background:var(--ink);color:var(--night)}
+.switch button[aria-pressed="true"]{background:var(--plum);color:#fff}
 .hint{font-size:13px;color:var(--muted);text-align:center;margin:-4px 0 0;text-wrap:balance}
 
-/* HERO */
-.hero{position:relative;border-radius:32px;overflow:hidden;min-height:440px;display:flex;flex-direction:column;justify-content:flex-end;padding:22px;isolation:isolate}
-.hero canvas{position:absolute;inset:0;width:100%;height:100%;z-index:-2}
-.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(14,11,46,0) 25%,rgba(14,11,46,.55) 60%,rgba(14,11,46,.96))}
-.tag{position:absolute;top:18px;left:18px;right:18px;display:flex;justify-content:space-between;align-items:center}
-.pill{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;border-radius:999px;background:rgba(14,11,46,.55);border:1px solid var(--line);backdrop-filter:blur(8px)}
-.pill.live{color:var(--ok)} .pill.live::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:7px;vertical-align:1px;box-shadow:0 0 0 4px rgba(110,231,168,.2)}
-.kicker{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--saffron);margin:0}
-h1{font-family:var(--display);font-weight:800;font-size:clamp(48px,15vw,68px);line-height:.9;letter-spacing:-.02em;margin:4px 0 12px;text-transform:uppercase}
-h1 span{display:block;-webkit-text-stroke:1.5px var(--ink);color:transparent}
-.where{display:flex;flex-wrap:wrap;gap:8px 14px;color:var(--muted);font-size:14px;margin:0 0 16px}
-.where b{color:var(--ink);font-weight:600}
-.stars{color:var(--saffron);letter-spacing:2px}
-.cta{display:grid;grid-template-columns:1.4fr 1fr;gap:10px}
-.btn{border-radius:16px;padding:15px 12px;font-weight:700;text-align:center;font-size:15px;transition:transform .15s}
-.btn:active{transform:scale(.97)}
-.btn-main{background:var(--saffron);color:#1A1200;box-shadow:0 10px 30px -10px rgba(245,183,49,.7)}
-.btn-glass{background:var(--glass-2);border:1px solid var(--line);backdrop-filter:blur(10px)}
-.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+/* HERO — placeholder photo élégant */
+.hero{position:relative;border-radius:26px;overflow:hidden;min-height:400px;display:flex;flex-direction:column;justify-content:flex-end;padding:22px;color:#fff;isolation:isolate;border:1px solid var(--line)}
+.hero .ph{position:absolute;inset:0;z-index:-2;background:
+  radial-gradient(120% 90% at 80% 10%, rgba(255,255,255,.22), transparent 55%),
+  linear-gradient(150deg,#9A3A6B 0%,#5E2342 55%,#2C1326 100%)}
+.hero .ph::after{content:"Votre photo ici";position:absolute;top:14px;left:14px;font-family:var(--body);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.3);padding:5px 10px;border-radius:999px;background:rgba(0,0,0,.12)}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 40%,rgba(28,12,22,.72))}
+.hpill{position:absolute;top:14px;right:14px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:6px 11px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);color:#fff}
+.open{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#fff;margin-bottom:10px}
+.open i{width:8px;height:8px;border-radius:50%;background:#7BE0A8;box-shadow:0 0 0 3px rgba(123,224,168,.3)}
+.hero h1{font-size:clamp(44px,13vw,62px);font-weight:700}
+.hero .sub{font-family:var(--body);font-size:14px;color:rgba(255,255,255,.85);margin:6px 0 0;display:flex;flex-wrap:wrap;gap:6px 14px}
+.stars{color:var(--gold);letter-spacing:2px}
+.cta{display:grid;grid-template-columns:1.5fr 1fr;gap:10px;margin-top:18px}
+.btn{border-radius:13px;padding:14px 12px;font-weight:700;text-align:center;font-size:15px;font-family:var(--body);transition:transform .15s var(--ease)}
+.btn:active{transform:scale(.98)}
+.btn-plum{background:var(--plum);color:#fff}
+.btn-gold{background:var(--gold);color:#241206}
+.btn-soft{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;backdrop-filter:blur(6px)}
+.btn-ghost{background:var(--card);border:1px solid var(--line);color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
 
-/* Bandeau défilant */
-.marquee{overflow:hidden;border-block:1px solid var(--line);padding:12px 0;mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
-.marquee div{display:flex;gap:28px;width:max-content;font-family:var(--serif);font-size:22px;font-style:italic;color:var(--rose)}
-.marquee div span::after{content:"✦";font-style:normal;color:var(--saffron);margin-left:28px;font-size:14px;vertical-align:4px}
-@media (prefers-reduced-motion:no-preference){.marquee div{animation:slide 26s linear infinite}@keyframes slide{to{transform:translateX(-50%)}}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px}
+.eyebrow{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--plum);font-weight:700}
+h2.t{font-size:28px;margin:6px 0 0}
+.lead{color:var(--muted);font-size:13.5px;margin:4px 0 16px}
 
-.card{background:var(--glass);border:1px solid var(--line);border-radius:26px;padding:20px;backdrop-filter:blur(14px);overflow:hidden;isolation:isolate}
-h2{font-family:var(--display);font-weight:700;font-size:20px;margin:0 0 4px;letter-spacing:-.01em}
-.sub{color:var(--muted);font-size:13.5px;margin:0 0 14px}
+/* prestations */
+.svc{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);width:100%;text-align:left}
+.svc:last-child{border-bottom:0}
+.svc .l .n{font-family:var(--display);font-size:20px;font-weight:600}
+.svc .l .d{font-size:12.5px;color:var(--muted)}
+.svc .r{display:flex;align-items:baseline;gap:12px;white-space:nowrap}
+.svc .p{font-family:var(--display);font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.svc .go{font-size:13px;font-weight:700;color:var(--plum)}
+.dots{flex:1;border-bottom:1px dotted var(--line);transform:translateY(-4px);min-width:10px}
 
-/* Galerie */
-.gallery{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:20px;margin:0 -20px -6px;padding:4px 20px 10px;scrollbar-width:none}
-.gallery::-webkit-scrollbar{display:none}
-.shot{flex:0 0 62%;scroll-snap-align:start;aspect-ratio:4/5;border-radius:20px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:14px;max-width:100%}
-.shot canvas{position:absolute;inset:0;width:100%;height:100%}
-.shot b{position:relative;font-family:var(--display);font-size:18px;text-shadow:0 2px 12px rgba(0,0,0,.5)}
-.shot small{position:absolute;top:12px;left:12px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:rgba(0,0,0,.35);padding:4px 9px;border-radius:999px;backdrop-filter:blur(6px)}
-
-/* Prestations */
-.svc{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:12px;border-radius:18px;border:1px solid transparent;transition:background .2s,border-color .2s;width:100%;text-align:left}
-.svc:hover{background:var(--glass)}
-.svc.sel{background:rgba(245,183,49,.12);border-color:rgba(245,183,49,.55)}
-.ico{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:15px;color:#1A1200}
-.svc .n{font-weight:600}
-.svc .d{font-size:13px;color:var(--muted)}
-.svc .p{font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
-.svc .p small{display:block;font-family:var(--body);font-weight:500;font-size:11.5px;color:var(--muted)}
-.svc.sel .p small{color:var(--saffron)}
-
-/* Avis */
-.quotes{display:grid;gap:10px}
-.q{border-left:2px solid var(--saffron);padding:2px 0 2px 14px}
-.q p{font-family:var(--serif);font-size:20px;line-height:1.25;margin:0 0 4px}
-.q span{font-size:12.5px;color:var(--muted)}
-.big{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
-.big b{font-family:var(--display);font-size:46px;line-height:1}
-.ex{font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.02em}
+/* galerie placeholders */
+.gal{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gal .tile{position:relative;aspect-ratio:1;border-radius:16px;overflow:hidden;display:flex;align-items:flex-end;padding:12px;color:#fff;border:1px solid var(--line)}
+.gal .tile:first-child{grid-column:1 / -1;aspect-ratio:16/10}
+.gal .tile b{position:relative;font-family:var(--display);font-size:18px;font-weight:600}
+.gal .tile .tag{position:absolute;top:10px;left:10px;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.3);padding:3px 8px;border-radius:999px}
+.note{font-size:12.5px;color:var(--muted);margin:12px 0 0}
 
 .info{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.info div{background:var(--glass);border-radius:16px;padding:12px}
-.info small{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
-.info b{font-size:14px}
+.info>div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px}
+.info small{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.info b{font-size:13.5px;font-weight:600}
 
-/* Barre collante */
-.bar{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:12px max(16px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));background:linear-gradient(180deg,rgba(14,11,46,0),rgba(14,11,46,.92) 35%)}
-.bar .in{max-width:460px;margin:0 auto;display:flex;gap:10px;align-items:center;background:rgba(30,26,94,.75);border:1px solid var(--line);border-radius:22px;padding:8px 8px 8px 16px;backdrop-filter:blur(16px)}
-.bar .t{flex:1;min-width:0;font-size:13px;color:var(--muted);line-height:1.3}
-.bar .t b{display:block;color:var(--ink);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:linear-gradient(180deg,transparent,var(--paper) 36%)}
+.bar .in{max-width:460px;margin:0 auto;display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:8px 8px 8px 16px;box-shadow:0 14px 30px -18px rgba(40,20,32,.35)}
+.bar .t{flex:1;min-width:0;font-size:12.5px;color:var(--muted);line-height:1.3}
+.bar .t b{display:block;color:var(--ink);font-size:14.5px;font-family:var(--display);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* Réservation (feuille) */
-.scrim{position:fixed;inset:0;z-index:30;background:rgba(5,4,20,.6);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center}
-.sheet{width:100%;max-width:480px;max-height:92%;overflow:auto;background:#17134A;border:1px solid var(--line);border-bottom:0;border-radius:30px 30px 0 0;padding:10px 20px calc(22px + env(safe-area-inset-bottom, 0px))}
-@media (prefers-reduced-motion:no-preference){.sheet{animation:up .35s cubic-bezier(.2,.8,.2,1)}@keyframes up{from{transform:translateY(40px);opacity:.3}}}
-.grab{width:42px;height:5px;border-radius:5px;background:var(--line);margin:4px auto 14px}
+.scrim{position:fixed;inset:0;z-index:30;background:rgba(30,14,22,.5);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center}
+.sheet{width:100%;max-width:480px;max-height:92%;overflow:auto;background:var(--card);border:1px solid var(--line);border-bottom:0;border-radius:26px 26px 0 0;padding:10px 20px calc(22px + env(safe-area-inset-bottom,0px))}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .35s var(--ease)}@keyframes up{from{transform:translateY(40px);opacity:.3}}}
+.grab{width:40px;height:5px;border-radius:5px;background:var(--line);margin:4px auto 14px}
 .steps{display:flex;gap:6px;margin-bottom:16px}
 .steps span{flex:1;height:4px;border-radius:4px;background:var(--line)}
-.steps span.on{background:var(--saffron)}
-.sheet h3{font-family:var(--display);font-size:22px;margin:0 0 4px}
+.steps span.on{background:var(--plum)}
+.sheet h3{font-family:var(--display);font-size:26px;margin:0 0 4px;font-weight:600}
+.pick-svc{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px;border:1px solid var(--line);border-radius:14px;width:100%;text-align:left;margin-top:8px;background:var(--card)}
+.pick-svc.sel{border-color:var(--plum);background:var(--plum-soft)}
+.pick-svc .n{font-family:var(--display);font-size:18px;font-weight:600}
+.pick-svc .d{font-size:12px;color:var(--muted)}
+.pick-svc .p{font-family:var(--display);font-size:18px;font-weight:600;font-variant-numeric:tabular-nums}
 .days{display:flex;gap:8px;overflow-x:auto;padding:4px 0 6px;scrollbar-width:none}
-.day{flex:0 0 auto;min-width:64px;border:1px solid var(--line);border-radius:16px;padding:10px 12px;text-align:center;background:var(--glass)}
-.day small{display:block;font-size:12px;color:var(--muted);text-transform:capitalize}
-.day b{font-family:var(--display);font-size:22px}
-.day[aria-pressed="true"]{background:var(--saffron);border-color:var(--saffron);color:#1A1200}
-.day[aria-pressed="true"] small{color:#1A1200}
-.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
-.slot{border:1px solid var(--line);border-radius:12px;padding:10px 0;font-weight:600;font-variant-numeric:tabular-nums;background:var(--glass)}
-.slot:disabled{text-decoration:line-through;color:rgba(185,179,220,.45);background:transparent;cursor:not-allowed}
-.slot[aria-pressed="true"]{background:var(--ink);color:var(--night)}
+.days::-webkit-scrollbar{display:none}
+.day{flex:0 0 auto;min-width:66px;border:1px solid var(--line);border-radius:14px;padding:9px 10px;text-align:center;background:var(--card)}
+.day small{display:block;font-size:11.5px;color:var(--muted);text-transform:capitalize}
+.day b{font-family:var(--display);font-size:22px;font-weight:600}
+.day em{display:block;font-style:normal;font-size:10px;font-weight:600;color:var(--ok);margin-top:1px}
+.day:disabled{opacity:.4;cursor:not-allowed}.day:disabled em{color:var(--muted)}
+.day[aria-pressed="true"]{background:var(--plum);border-color:var(--plum);color:#fff}
+.day[aria-pressed="true"] small,.day[aria-pressed="true"] em{color:#fff}
+.grp{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px;font-weight:700}
+.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.slot{border:1px solid var(--line);border-radius:11px;padding:9px 0;font-weight:600;font-variant-numeric:tabular-nums;background:var(--card)}
+.slot small{display:block;font-size:9.5px;font-weight:600;color:var(--warn);margin-top:1px}
+.slot:disabled{color:var(--muted);opacity:.55;cursor:not-allowed}
+.slot[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.pickd{margin-top:14px;background:var(--plum-soft);border:1px solid var(--plum);border-radius:13px;padding:11px 13px;font-size:14px}
+.pickd b{color:var(--plum);font-variant-numeric:tabular-nums}
 label{display:block;font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--muted)}
-input{width:100%;border:1px solid var(--line);background:var(--glass);color:var(--ink);border-radius:14px;padding:13px 14px;font:inherit}
-input::placeholder{color:rgba(185,179,220,.6)}
-.recap{background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:6px;font-size:14px;margin:12px 0}
+input{width:100%;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:12px;padding:13px 14px;font:inherit}
+input::placeholder{color:var(--muted)}
+.recap{background:var(--paper);border:1px solid var(--line);border-radius:15px;padding:14px;display:grid;gap:7px;font-size:14px;margin:14px 0}
 .recap .row{display:flex;justify-content:space-between;gap:12px}
 .recap .row span:last-child{font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
-.recap .tot{border-top:1px dashed var(--line);padding-top:8px;font-size:16px}
-.recap .tot span:last-child{color:var(--saffron);font-family:var(--display)}
+.recap .tot{border-top:1px dashed var(--line);padding-top:9px;font-size:16px}
+.recap .tot span:last-child{color:var(--plum);font-family:var(--display);font-size:20px}
 .ops{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.op{border:2px solid var(--line);border-radius:16px;padding:14px 10px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--glass)}
-.op i{width:22px;height:22px;border-radius:6px;display:inline-block}
-.op[aria-pressed="true"]{border-color:var(--saffron);background:rgba(245,183,49,.1)}
-.note{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+.op{border:2px solid var(--line);border-radius:14px;padding:14px 10px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--card)}
+.op i{width:20px;height:20px;border-radius:5px;display:inline-block}
+.op[aria-pressed="true"]{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 12%,transparent)}
 .nav{display:flex;gap:10px;margin-top:16px}.nav .btn{flex:1}
-.done{text-align:center;padding:8px 0 4px;position:relative}
-.ring{width:84px;height:84px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,rgba(110,231,168,.25),transparent 70%)}
-.ring svg{width:56px;height:56px}
-.ring path{stroke:var(--ok);stroke-width:5;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60;stroke-dashoffset:0}
+.done{text-align:center;padding:8px 0 4px}
+.ring{width:80px;height:80px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:var(--ok-soft)}
+.ring svg{width:46px;height:46px}.ring path{stroke:var(--ok);stroke-width:5;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60}
 @media (prefers-reduced-motion:no-preference){.ring path{animation:draw .7s .1s ease-out both}@keyframes draw{from{stroke-dashoffset:60}}}
-#confetti{position:fixed;inset:0;z-index:40;pointer-events:none}
-/* ---- Vie : poussière dorée, respiration, reflets, apparitions ---- */
-#dust{position:fixed;inset:0;z-index:0;pointer-events:none}
-.rot{display:inline-block;min-width:5.2ch;color:var(--ink);font-style:italic}
-.rot.swap{animation:rotIn .5s cubic-bezier(.2,.8,.2,1)}
-@keyframes rotIn{from{opacity:.001;transform:translateY(.4em)}to{opacity:1;transform:none}}
-.today{display:inline-flex;align-items:center;gap:6px;color:var(--ink);background:rgba(110,231,168,.14);border:1px solid rgba(110,231,168,.35);padding:3px 10px;border-radius:999px;font-size:12.5px;font-weight:600}
-.today.low{background:rgba(255,122,89,.14);border-color:rgba(255,122,89,.4)}
-.btn-main{position:relative;overflow:hidden}
-.btn-main::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%);transform:translateX(-120%)}
-.svc{transition:background .2s,border-color .2s,transform .25s cubic-bezier(.2,.8,.2,1)}
-.svc:hover{transform:translateX(4px)}
-.svc .ico{transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
-.svc:hover .ico,.svc.sel .ico{transform:rotate(-8deg) scale(1.08)}
-.shot{transition:transform .4s cubic-bezier(.2,.8,.2,1)}
-.shot:hover{transform:translateY(-4px) rotate(-.6deg)}
-.reveal{transition:opacity .8s cubic-bezier(.2,.8,.2,1),transform .8s cubic-bezier(.2,.8,.2,1)}
-.reveal.pre{opacity:.35;transform:translateY(26px)}
-.reveal .svc{transition:opacity .6s,transform .6s cubic-bezier(.2,.8,.2,1),background .2s,border-color .2s}
-.reveal.pre .svc{opacity:.2;transform:translateX(-14px)}
-.reveal .svc:nth-child(2){transition-delay:.06s}.reveal .svc:nth-child(3){transition-delay:.12s}.reveal .svc:nth-child(4){transition-delay:.18s}.reveal .svc:nth-child(5){transition-delay:.24s}
-.reveal.done .svc:nth-child(n){transition-delay:0s}
-.big b{display:inline-block}
-@media (prefers-reduced-motion:no-preference){
-  .hero canvas{animation:breathe 22s ease-in-out infinite alternate;animation-delay:-6s}
-  @keyframes breathe{from{scale:1.04}to{scale:1.14}}
-  .pill.live::before{animation:beat 2.4s ease-in-out infinite}
-  @keyframes beat{0%,100%{box-shadow:0 0 0 3px rgba(110,231,168,.25)}50%{box-shadow:0 0 0 8px rgba(110,231,168,0)}}
-  .btn-main::after{animation:sheen 4.5s ease-in-out infinite;animation-delay:-1s}
-  @keyframes sheen{0%,70%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
-  .stars{background:linear-gradient(90deg,var(--saffron) 40%,#FFE7A3 50%,var(--saffron) 60%);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:glint 5s linear infinite}
-  @keyframes glint{from{background-position:100% 0}to{background-position:-200% 0}}
-  .kpi-ca b{animation:glow 4s ease-in-out infinite alternate}
-  @keyframes glow{from{text-shadow:0 0 0 rgba(245,183,49,0)}to{text-shadow:0 0 22px rgba(245,183,49,.45)}}
-  .rdv.fresh{animation:fresh 1.2s cubic-bezier(.2,.8,.2,1)}
-  @keyframes fresh{from{transform:translateX(-12px);opacity:.3}}
-}
-body.paused *,body.paused *::before,body.paused *::after{animation-play-state:paused!important}
-@media (prefers-reduced-motion:reduce){.reveal.pre,.reveal.pre .svc{opacity:1;transform:none}#dust{display:none}}
 
-/* Vue salon */
-.dash-top{border-radius:28px;padding:22px;background:linear-gradient(135deg,#3B2FC9,#1E1A5E 60%);border:1px solid var(--line);position:relative;overflow:hidden}
-.dash-top::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:var(--saffron);opacity:.18;filter:blur(10px)}
-.dash-top p{margin:0;color:var(--muted);font-size:13px}
-.dash-top h2{font-size:26px;margin:2px 0 16px}
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;position:relative;z-index:1}
-.kpi-ca{grid-column:1/-1;display:flex;flex-direction:column;gap:2px;padding:14px 16px}
-.kpi.kpi-ca b{font-size:34px;color:var(--saffron)}
-.kpi.kpi-ca>span{font-size:12.5px}
-.kpi{background:rgba(14,11,46,.45);border-radius:16px;padding:12px}
-.kpi b{display:block;font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums;line-height:1.1}
-.kpi span{font-size:11.5px;color:var(--muted)}
-.rdv{display:grid;grid-template-columns:62px 1fr;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+/* vue salon */
+.dash{border-radius:22px;padding:22px;background:linear-gradient(145deg,#7A2E55,#3E1730);color:#fff;border:1px solid var(--line)}
+.dash p{margin:0;opacity:.8;font-size:13px}.dash h2{font-size:26px;margin:2px 0 16px;color:#fff}
+.kpi-ca{background:rgba(0,0,0,.22);border-radius:15px;padding:14px 16px;display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
+.kpi-ca span{font-size:12.5px;opacity:.85}.kpi-ca b{font-family:var(--body);font-weight:700;font-size:30px;letter-spacing:-.01em;color:var(--gold);font-variant-numeric:tabular-nums}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpi{background:rgba(0,0,0,.22);border-radius:13px;padding:11px}
+.kpi b{display:block;font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}.kpi em{font-size:11px;opacity:.8;font-style:normal}
+.rdv{display:grid;grid-template-columns:54px 1fr;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
 .rdv:last-child{border-bottom:0}
-.rdv .t{font-family:var(--display);font-weight:700;font-size:19px;font-variant-numeric:tabular-nums}
-.rdv .t small{display:block;font-family:var(--body);font-weight:500;font-size:11.5px;color:var(--muted);text-transform:capitalize}
-.rdv .who{font-weight:600}
-.rdv .what{font-size:13px;color:var(--muted)}
-.rdv.fresh{background:linear-gradient(90deg,rgba(245,183,49,.12),transparent);border-radius:16px;padding-left:10px;margin-left:-10px}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
-.chip{font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:999px}
-.chip.paid{background:rgba(110,231,168,.15);color:var(--ok)}
-.chip.unpaid{background:rgba(255,122,89,.15);color:var(--coral)}
-.chip.new{background:var(--saffron);color:#1A1200}
-.mini{border:1px solid var(--line);border-radius:10px;padding:5px 10px;font-size:12.5px;font-weight:600;background:var(--glass)}
-.msg{margin-top:10px;background:rgba(14,11,46,.5);border:1px solid var(--line);border-radius:14px 14px 14px 4px;padding:12px;font-size:13.5px}
-.msg p{margin:0 0 8px}
-.share{display:flex;gap:10px;align-items:center;background:rgba(14,11,46,.5);border:1px solid var(--line);border-radius:14px;padding:12px}
-.share code{flex:1;min-width:0;font-size:14px;color:var(--saffron);word-break:break-all}
-.day:disabled{opacity:.4;cursor:not-allowed}
-.day em{display:block;font-style:normal;font-size:10.5px;font-weight:600;color:var(--ok);margin-top:2px}
-.day:disabled em{color:var(--muted)}
-.day[aria-pressed="true"] em{color:#1A1200}
-.grp{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:14px 0 -4px;font-weight:700}
-.slot small{display:block;font-size:10px;font-weight:600;text-decoration:none;color:var(--coral);margin-top:1px}
-.slot:disabled{text-decoration:none}
-.slot:disabled{color:rgba(185,179,220,.45)}
-.pickd{margin-top:14px;background:rgba(245,183,49,.12);border:1px solid rgba(245,183,49,.5);border-radius:14px;padding:10px 12px;font-size:14px}
-.pickd b{color:var(--saffron);font-variant-numeric:tabular-nums}
-.blk{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
-.blk .what{font-size:13px;color:var(--muted)}
-.bform{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.bform .full{grid-column:1/-1}
-.bform label{margin:0 0 4px}
-select{width:100%;border:1px solid var(--line);background:#1E1A5E;color:var(--ink);border-radius:14px;padding:12px;font:inherit}
-.err{color:var(--coral);font-size:13px;margin:8px 0 0}
+.rdv.fresh{background:var(--plum-soft);border-radius:13px;padding-left:10px;margin-left:-10px}
+.rdv .t{font-family:var(--display);font-weight:600;font-size:19px;font-variant-numeric:tabular-nums;line-height:1}
+.rdv .t small{display:block;font-family:var(--body);font-weight:500;font-size:11px;color:var(--muted);text-transform:capitalize;margin-top:2px}
+.rdv .who{font-weight:600}.rdv .what{font-size:12.5px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;align-items:center}
+.chip{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px}
+.chip.paid{background:var(--ok-soft);color:var(--ok)}.chip.unpaid{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)}.chip.new{background:var(--gold);color:#241206}
+.mini{border:1px solid var(--line);border-radius:10px;padding:5px 10px;font-size:12px;font-weight:600;background:var(--card)}
+.msg{margin-top:9px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:11px;font-size:13px}.msg p{margin:0 0 8px}
+.share{display:flex;gap:10px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px}
+.share code{flex:1;min-width:0;font-size:14px;color:var(--plum);word-break:break-all}
+.ex{font-size:10.5px;color:var(--muted);font-weight:500}
+.bform{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.bform .full{grid-column:1/-1}.bform label{margin:0 0 4px}
+select{width:100%;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:12px;padding:12px;font:inherit}
+.err{color:var(--warn);font-size:13px;margin:8px 0 0}
+.blk{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13.5px}.blk .what{font-size:12.5px;color:var(--muted)}
+@media (pointer:coarse){.btn{min-height:44px}}
+body.paused *,body.paused *::before,body.paused *::after{animation-play-state:paused!important}
 </style>
 </head>
 <body>
 
-
-<div class="aura" aria-hidden="true"><i></i><i></i><i></i></div>
-<canvas id="dust" aria-hidden="true"></canvas>
 
 <div class="wrap">
   <div class="switch" role="group" aria-label="Choisir la vue">
@@ -254,130 +180,115 @@ select{width:100%;border:1px solid var(--line);background:#1E1A5E;color:var(--in
   </div>
   <p class="hint" id="hint">Ce que voit une cliente quand elle ouvre le lien du salon.</p>
 
-  <!-- ============ VUE CLIENTE ============ -->
+  <!-- VUE CLIENTE -->
   <div id="client" style="display:flex;flex-direction:column;gap:16px">
     <header class="hero">
-      <canvas id="hero-art" aria-hidden="true"></canvas>
-      <div class="tag"><span class="pill live">Ouvert · jusqu'à 20h</span><span class="pill">Démo</span></div>
-      <p class="kicker rise">Votre moment <span class="rot" id="rot">tresses</span> à Cotonou</p>
-      <h1 class="rise d1">Maison<span>Ayaba</span></h1>
-      <p class="where rise d2"><span><b>Cadjehoun</b> · 5 min de l'aéroport</span><span><span class="stars">★★★★★</span> 4,8 (63 avis)</span><span class="today" id="today-free"></span></p>
-      <div class="cta rise d3">
-        <button class="btn btn-main" id="go-book">Réserver un créneau</button>
-        <button class="btn btn-glass" id="go-wa">WhatsApp</button>
+      <div class="ph" aria-hidden="true"></div>
+      <span class="hpill">Démo</span>
+      <span class="open"><i aria-hidden="true"></i>Ouvert · ferme à 20h</span>
+      <h1>Maison Ayaba</h1>
+      <p class="sub"><span>Beauté &amp; soins · Cadjehoun</span><span><span class="stars">★★★★★</span> 4,8 (63 avis)</span></p>
+      <div class="cta">
+        <button class="btn btn-gold" id="go-book">Réserver</button>
+        <button class="btn btn-soft" id="go-wa">WhatsApp</button>
       </div>
     </header>
     <p class="note" id="wa-note" hidden style="margin:-6px 4px 0">Dans la vraie version, ce bouton ouvre WhatsApp avec le message « Bonjour Maison Ayaba, je voudrais un rendez-vous » déjà écrit.</p>
 
-    <div class="marquee" aria-hidden="true"><div>
-      <span>Tresses</span><span>Ongles gel</span><span>Maquillage mariée</span><span>Soin visage</span><span>Locks</span><span>Pédicure</span>
-      <span>Tresses</span><span>Ongles gel</span><span>Maquillage mariée</span><span>Soin visage</span><span>Locks</span><span>Pédicure</span>
-    </div></div>
-
-    <section class="card reveal">
-      <h2>Nos réalisations</h2>
-      <p class="sub">Faites glisser. Le salon met ici ses vraies photos.</p>
-      <div class="gallery" id="gallery"></div>
-    </section>
-
-    <section class="card reveal">
-      <h2>Prestations</h2>
-      <p class="sub">Touchez une prestation pour réserver. Acompte de 2 000 F, déduit du prix.</p>
+    <section class="card">
+      <span class="eyebrow">La carte</span>
+      <h2 class="t">Nos prestations</h2>
+      <p class="lead">Touchez une prestation pour réserver. Acompte de 2 000 F, déduit du prix.</p>
       <div id="services"></div>
     </section>
 
-    <section class="card reveal">
-      <div class="big"><b>4,8</b><div><span class="stars">★★★★★</span><div class="ex">63 avis Google · avis d'exemple pour la démo</div></div></div>
-      <div class="quotes">
-        <div class="q"><p>« Mes tresses ont tenu six semaines. Et j'ai réservé en deux minutes. »</p><span>Exemple d'avis</span></div>
-        <div class="q"><p>« Enfin un salon où on sait le prix avant de venir. »</p><span>Exemple d'avis</span></div>
+    <section class="card">
+      <span class="eyebrow">Le salon</span>
+      <h2 class="t">Nos réalisations</h2>
+      <p class="lead">Le salon met ici ses vraies photos. Voici les emplacements.</p>
+      <div class="gal">
+        <div class="tile" style="background:linear-gradient(140deg,#8A3A64,#3E1730)"><span class="tag">Votre photo</span><b>Tresses &amp; locks</b></div>
+        <div class="tile" style="background:linear-gradient(140deg,#B06A88,#5E2342)"><span class="tag">Votre photo</span><b>Ongles</b></div>
+        <div class="tile" style="background:linear-gradient(140deg,#C2954A,#6E4E18)"><span class="tag">Votre photo</span><b>Maquillage</b></div>
       </div>
     </section>
 
     <section class="info">
       <div><small>Horaires</small><b>Lun–Sam<br>9h–20h</b></div>
-      <div><small>Paiement</small><b>MoMo, Moov, espèces</b></div>
-      <div><small>Adresse</small><b>Cadjehoun, Cotonou</b></div>
+      <div><small>Adresse</small><b>Cadjehoun,<br>Cotonou</b></div>
+      <div><small>Paiement</small><b>MoMo, Moov,<br>espèces</b></div>
     </section>
   </div>
 
-  <!-- ============ VUE SALON ============ -->
+  <!-- VUE SALON -->
   <div id="salon" hidden style="display:flex;flex-direction:column;gap:16px">
-    <div class="dash-top">
-      <p>Bonjour Ayaba 👋</p>
-      <h2>Votre semaine</h2>
+    <div class="dash">
+      <p>Bonjour, Maison Ayaba 🌸</p><h2>Votre semaine</h2>
+      <div class="kpi-ca"><span>Chiffre d'affaires de la semaine</span><b><span id="k-ca">0</span> F</b></div>
       <div class="kpis">
-        <div class="kpi kpi-ca"><span>Chiffre d'affaires de la semaine</span><b><span id="k-ca">0</span> F</b></div>
-        <div class="kpi"><b id="k-rdv">0</b><span>rendez-vous</span></div>
-        <div class="kpi"><b id="k-dep">0</b><span>F déjà encaissés (acomptes)</span></div>
-        <div class="kpi"><b id="k-rest">0</b><span>F à encaisser au salon</span></div>
+        <div class="kpi"><b id="k-rdv">0</b><em>rendez-vous</em></div>
+        <div class="kpi"><b id="k-dep">0</b><em>F encaissés</em></div>
+        <div class="kpi"><b id="k-rest">0</b><em>F à encaisser</em></div>
       </div>
     </div>
     <section class="card">
-      <h2>Agenda</h2>
-      <p class="sub">Les 3 premiers rendez-vous sont des exemples.</p>
+      <span class="eyebrow">Agenda</span><h2 class="t">Rendez-vous à venir</h2>
+      <p class="lead">Les 3 premiers sont des exemples.</p>
       <div id="agenda"></div>
     </section>
     <section class="card">
-      <h2>Mes indisponibilités</h2>
-      <p class="sub">Pause, absence, formation : ces heures disparaissent de la réservation en ligne.</p>
+      <span class="eyebrow">Disponibilités</span><h2 class="t">Mes indisponibilités</h2>
+      <p class="lead">Ces heures disparaissent de la réservation en ligne.</p>
       <div id="blocks"></div>
       <div class="bform">
         <div class="full"><label for="b-day">Jour</label><select id="b-day"></select></div>
         <div><label for="b-from">De</label><select id="b-from"></select></div>
         <div><label for="b-to">À</label><select id="b-to"></select></div>
-        <div class="full"><label for="b-why">Raison (visible par vous seule)</label><input id="b-why" placeholder="Ex. Rendez-vous fournisseur"></div>
-        <button class="btn btn-main full" id="b-add">Bloquer ces heures</button>
+        <div class="full"><label for="b-why">Raison</label><input id="b-why" placeholder="Ex. Formation"></div>
+        <button class="btn btn-plum full" id="b-add">Bloquer ces heures</button>
       </div>
       <p class="err" id="b-err" hidden></p>
     </section>
     <section class="card">
-      <h2>Votre lien</h2>
-      <p class="sub">À mettre dans la bio Instagram, le statut WhatsApp et la fiche Google.</p>
+      <span class="eyebrow">Partage</span><h2 class="t">Votre lien</h2>
+      <p class="lead">Pour la bio Instagram, le statut WhatsApp et la fiche Google.</p>
       <div class="share"><code>berodak.github.io/demo</code><button class="mini" id="copy-link">Copier</button></div>
     </section>
     <section class="card">
-      <h2>Demander un avis Google</h2>
-      <p class="sub">À envoyer après chaque visite.</p>
-      <div class="msg"><p id="review-msg">Merci pour votre visite chez Maison Ayaba ! Votre avis nous aide beaucoup : [lien vers votre fiche Google]</p><button class="mini" data-copy="review-msg">Copier le message</button></div>
+      <span class="eyebrow">Avis</span><h2 class="t">Demander un avis Google</h2>
+      <div class="msg"><p id="rev">Merci pour votre visite chez Maison Ayaba ! Votre avis nous aide beaucoup : [lien vers votre fiche Google]</p><button class="mini" data-copy="rev">Copier le message</button></div>
     </section>
   </div>
 </div>
 
 <div class="bar" id="bar"><div class="in">
-  <div class="t" id="bar-t">Prochain créneau libre<b id="bar-next">aujourd'hui</b></div>
-  <button class="btn btn-main" id="bar-book" style="padding:13px 18px">Réserver</button>
+  <div class="t" id="bar-t">Prochain créneau<b id="bar-next">aujourd'hui</b></div>
+  <button class="btn btn-plum" id="bar-book" style="padding:13px 18px">Réserver</button>
 </div></div>
 
 <div class="scrim" id="scrim" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Réservation"></div></div>
-<canvas id="confetti" aria-hidden="true"></canvas>
 
 <script>
 const SERVICES=[
-  {id:"tr",n:"Tresses box braids",d:"3 h",m:180,p:15000,c:"#F5B731",i:"Tr"},
-  {id:"on",n:"Pose ongles gel",d:"1 h 15",m:75,p:8000,c:"#F2A7C3",i:"On"},
-  {id:"sv",n:"Soin du visage éclat",d:"1 h",m:60,p:12000,c:"#6EE7A8",i:"Sv"},
-  {id:"mq",n:"Maquillage événement",d:"1 h",m:60,p:20000,c:"#FF7A59",i:"Mq"},
-  {id:"pd",n:"Pédicure spa",d:"45 min",m:45,p:6000,c:"#A99BFF",i:"Pd"}
+  {id:"tr",n:"Tresses box braids",d:"3 h",m:180,p:15000},
+  {id:"on",n:"Pose ongles gel",d:"1 h 15",m:75,p:8000},
+  {id:"sv",n:"Soin du visage éclat",d:"1 h",m:60,p:12000},
+  {id:"mq",n:"Maquillage événement",d:"1 h",m:60,p:20000},
+  {id:"pd",n:"Pédicure spa",d:"45 min",m:45,p:6000}
 ];
-const SHOTS=[["Tresses","#F5B731","#7A3E12"],["Ongles gel","#F2A7C3","#6B1F48"],["Maquillage","#FF7A59","#5A1A10"],["Soin visage","#6EE7A8","#0F4A3A"],["Locks","#A99BFF","#2A1E7A"]];
 const DEPOSIT=2000, REDUCED=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const fmt=n=>n.toLocaleString("fr-FR").replace(/ | /g," ");
 const $=id=>document.getElementById(id);
-
-/* ---- Règles d'agenda du salon ---- */
-const HOURS={0:null,1:[540,1200],2:[540,1200],3:[540,1200],4:[540,1200],5:[540,1200],6:[540,1080]}; // minutes depuis minuit ; dimanche fermé ; samedi 9h-18h
-const LUNCH=[780,840];   // pause 13h-14h
-const STEP=30;           // un créneau toutes les 30 min
-const LEAD=60;           // réserver au moins 1 h à l'avance
+const HOURS={0:null,1:[540,1200],2:[540,1200],3:[540,1200],4:[540,1200],5:[540,1200],6:[540,1080]};
+const LUNCH=[780,840], STEP=30, LEAD=60;
 const toHM=m=>String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
-const days=[];{const now=new Date();for(let i=0;i<7;i++){const d=new Date(now);d.setDate(now.getDate()+i);d.setHours(0,0,0,0);days.push(d)}}
+const days=[];{const now=new Date();for(let i=0;i<7;i++){const d=new Date(now);d.setDate(now.getDate()+i);d.setHours(0,0,0,0);days.push(d);}}
 const isOpen=i=>!!HOURS[days[i].getDay()];
 const openIdx=days.map((_,i)=>i).filter(isOpen);
 const label=d=>d.toLocaleDateString("fr-FR",{weekday:"short"}).replace(".","");
 const dayTxt=i=>i===0?"aujourd'hui":i===1?"demain":label(days[i])+" "+days[i].getDate();
-const nowMin=()=>{const n=new Date();return n.getHours()*60+n.getMinutes()};
-const o0=openIdx[0]??1, o1=openIdx[1]??2;
+const nowMin=()=>{const n=new Date();return n.getHours()*60+n.getMinutes();};
+const o0=openIdx[0]??1,o1=openIdx[1]??2;
 let bookings=[
   {who:"Afiwa D.",svc:"tr",day:o0,start:600,paid:true,ex:true},
   {who:"Nadège K.",svc:"on",day:o0,start:900,paid:true,ex:true},
@@ -386,11 +297,8 @@ let bookings=[
 let blocks=[{day:o1,start:960,end:1080,reason:"Formation",ex:true}];
 const durOf=b=>SERVICES.find(x=>x.id===b.svc).m;
 const overlap=(a1,a2,b1,b2)=>a1<b2&&b1<a2;
-
-/* Renvoie null si le créneau est libre, sinon la raison */
 function slotState(di,start,dur){
-  const h=HOURS[days[di].getDay()];if(!h)return"Fermé";
-  const end=start+dur;
+  const h=HOURS[days[di].getDay()];if(!h)return"Fermé";const end=start+dur;
   if(di===0&&start<nowMin()+LEAD)return"Passé";
   if(end>h[1])return"Trop tard";
   if(overlap(start,end,LUNCH[0],LUNCH[1]))return"Pause";
@@ -398,199 +306,122 @@ function slotState(di,start,dur){
   if(bookings.some(b=>b.day===di&&overlap(start,end,b.start,b.start+durOf(b))))return"Pris";
   return null;
 }
-function starts(di){const h=HOURS[days[di].getDay()];if(!h)return[];const r=[];for(let m=h[0];m<h[1];m+=STEP)r.push(m);return r}
+function starts(di){const h=HOURS[days[di].getDay()];if(!h)return[];const r=[];for(let m=h[0];m<h[1];m+=STEP)r.push(m);return r;}
 const freeCount=(di,dur)=>starts(di).filter(m=>!slotState(di,m,dur)).length;
-
 const st={step:0,svc:null,day:null,time:null,name:"",tel:"",op:null};
+const svcObj=()=>SERVICES.find(x=>x.id===st.svc);
 
-/* Motifs génératifs inspirés des tissus wax (canvas) */
-function pattern(cv,a,b,seed){
-  const r=cv.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
-  cv.width=Math.max(1,r.width*dpr);cv.height=Math.max(1,r.height*dpr);
-  const x=cv.getContext("2d");x.scale(dpr,dpr);const W=r.width,H=r.height;
-  const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,b);g.addColorStop(1,"#0E0B2E");x.fillStyle=g;x.fillRect(0,0,W,H);
-  let s=seed;const rnd=()=>(s=(s*9301+49297)%233280)/233280;
-  const step=Math.max(34,W/6);
-  for(let gx=-step;gx<W+step;gx+=step)for(let gy=-step;gy<H+step;gy+=step){
-    const ox=(Math.floor(gy/step)%2)*step/2,cx=gx+ox,cy=gy;x.save();x.translate(cx,cy);
-    x.globalAlpha=.18+rnd()*.35;x.strokeStyle=a;x.fillStyle=a;x.lineWidth=2;
-    const k=Math.floor(rnd()*3);
-    if(k===0){for(let rr=step*.42;rr>4;rr-=7){x.beginPath();x.arc(0,0,rr,0,Math.PI*2);x.stroke()}}
-    else if(k===1){x.rotate(Math.PI/4);x.strokeRect(-step*.28,-step*.28,step*.56,step*.56);x.fillRect(-step*.1,-step*.1,step*.2,step*.2)}
-    else{for(let p=0;p<6;p++){x.rotate(Math.PI/3);x.beginPath();x.ellipse(step*.2,0,step*.18,step*.07,0,0,Math.PI*2);x.fill()}}
-    x.restore()}
-  const v=x.createRadialGradient(W*.7,H*.25,10,W*.7,H*.25,W);v.addColorStop(0,"rgba(255,255,255,.18)");v.addColorStop(1,"rgba(0,0,0,0)");x.globalAlpha=1;x.fillStyle=v;x.fillRect(0,0,W,H);
-}
-function drawArt(){pattern($("hero-art"),"#F5B731","#3B2FC9",7);document.querySelectorAll(".shot canvas").forEach((c,i)=>pattern(c,SHOTS[i][1],SHOTS[i][2],i*31+3))}
-
-function renderGallery(){$("gallery").innerHTML=SHOTS.map((s,i)=>`<div class="shot"><canvas></canvas><small>0${i+1}</small><b>${s[0]}</b></div>`).join("")}
 function renderServices(){
-  $("services").innerHTML=SERVICES.map(s=>`<button class="svc ${st.svc===s.id?"sel":""}" data-svc="${s.id}">
-    <span class="ico" style="background:${s.c}">${s.i}</span>
-    <span><span class="n">${s.n}</span><br><span class="d">${s.d}</span></span>
-    <span class="p">${fmt(s.p)} F<small>${st.svc===s.id?"Choisi ✓":"Réserver"}</small></span></button>`).join("");
+  $("services").innerHTML=SERVICES.map(s=>`<button class="svc" data-svc="${s.id}">
+    <span class="l"><span class="n">${s.n}</span><div class="d">${s.d}</div></span>
+    <span class="dots"></span><span class="r"><span class="p">${fmt(s.p)} F</span><span class="go">Réserver</span></span></button>`).join("");
 }
-function nextFree(dur){for(let d=0;d<days.length;d++)for(const m of starts(d))if(!slotState(d,m,dur))return dayTxt(d)+" à "+toHM(m);return "la semaine prochaine"}
-function updateToday(){
-  const el=$("today-free");if(!el)return;
-  if(!isOpen(0)){el.className="today";el.textContent="Fermé aujourd'hui · ouvert demain dès 9h";return}
-  const n=freeCount(0,45);
-  el.className="today"+(n<=3?" low":"");
-  el.textContent=n===0?"Complet aujourd'hui · réservez demain":n<=3?`Plus que ${n} créneau${n>1?"x":""} aujourd'hui`:`${n} créneaux libres aujourd'hui`;
-}
-function updateBar(){updateToday();
-  const s=SERVICES.find(x=>x.id===st.svc);
-  $("bar-t").innerHTML=s?`${s.n} · ${s.d}<b>Libre ${nextFree(s.m)}</b>`:`Prochain créneau libre<b>${nextFree(45)}</b>`;
-}
+function nextFree(dur){for(let d=0;d<days.length;d++)for(const m of starts(d))if(!slotState(d,m,dur))return dayTxt(d)+" à "+toHM(m);return "la semaine prochaine";}
+function updateBar(){const s=svcObj();$("bar-t").innerHTML=s?`${s.n}<b>Libre ${nextFree(s.m)}</b>`:`Prochain créneau<b>${nextFree(45)}</b>`;}
 const stepsBar=()=>`<div class="grab"></div><div class="steps">${[0,1,2,3].map(i=>`<span class="${i<=st.step?"on":""}"></span>`).join("")}</div>`;
-function openSheet(){$("scrim").hidden=false;renderSheet()}
-function closeSheet(){$("scrim").hidden=true}
-function firstDayWithRoom(dur){return days.findIndex((_,i)=>freeCount(i,dur)>0)}
+function openSheet(){$("scrim").hidden=false;renderSheet();}
+function closeSheet(){$("scrim").hidden=true;}
+function firstDayWithRoom(dur){return days.findIndex((_,i)=>freeCount(i,dur)>0);}
 function renderSheet(){
-  const sh=$("sheet"),s=SERVICES.find(x=>x.id===st.svc);
+  const sh=$("sheet"),s=svcObj();
   if(st.step===0){
-    sh.innerHTML=stepsBar()+`<h3>Quelle prestation ?</h3><p class="note" style="margin:0 0 10px">Choisissez ce qui vous fait envie.</p>
-    ${SERVICES.map(x=>`<button class="svc ${st.svc===x.id?"sel":""}" data-pick="${x.id}"><span class="ico" style="background:${x.c}">${x.i}</span><span><span class="n">${x.n}</span><br><span class="d">${x.d}</span></span><span class="p">${fmt(x.p)} F</span></button>`).join("")}
-    <div class="nav"><button class="btn btn-glass" data-act="close">Fermer</button><button class="btn btn-main" data-act="next" ${s?"":"disabled"}>Continuer</button></div>`;
+    sh.innerHTML=stepsBar()+`<h3>Quelle prestation ?</h3>
+    ${SERVICES.map(x=>`<button class="pick-svc ${st.svc===x.id?"sel":""}" data-pick="${x.id}"><span><span class="n">${x.n}</span><div class="d">${x.d}</div></span><span class="p">${fmt(x.p)} F</span></button>`).join("")}
+    <div class="nav"><button class="btn btn-ghost" data-act="close">Fermer</button><button class="btn btn-plum" data-act="next" ${s?"":"disabled"}>Continuer</button></div>`;
   }else if(st.step===1){
-    if(st.day===null||freeCount(st.day,s.m)===0&&st.time===null)st.day=Math.max(0,firstDayWithRoom(s.m));
+    if(st.day===null)st.day=Math.max(0,firstDayWithRoom(s.m));
     const list=starts(st.day).map(m=>({m,why:slotState(st.day,m,s.m)})).filter(x=>x.why!=="Passé"&&x.why!=="Trop tard");
     const groups=[["Matin",0,780],["Après-midi",780,1020],["Soir",1020,1440]].map(([g,a,b])=>[g,list.filter(x=>x.m>=a&&x.m<b)]).filter(([,l])=>l.length);
     const h=HOURS[days[st.day].getDay()];
     sh.innerHTML=stepsBar()+`<h3>Quand venez-vous ?</h3><p class="note" style="margin:0 0 10px">${s.n} · dure ${s.d}</p>
-    <div class="days">${days.map((d,i)=>{const open=isOpen(i),n=open?freeCount(i,s.m):0;
-      return `<button class="day" data-day="${i}" aria-pressed="${st.day===i}" ${n?"":"disabled"}><small>${i===0?"auj.":label(d)}</small><b>${d.getDate()}</b><em>${!open?"Fermé":n?n+" dispo":"Complet"}</em></button>`}).join("")}</div>
-    ${groups.length?groups.map(([g,l])=>`<div class="grp">${g}</div><div class="slots">${l.map(x=>`<button class="slot" data-time="${x.m}" ${x.why?"disabled":""} aria-pressed="${st.time===x.m}">${toHM(x.m)}${x.why?`<small>${x.why}</small>`:""}</button>`).join("")}</div>`).join(""):`<p class="note">Plus aucun créneau ce jour-là. Choisissez un autre jour.</p>`}
+    <div class="days">${days.map((d,i)=>{const open=isOpen(i),n=open?freeCount(i,s.m):0;return `<button class="day" data-day="${i}" aria-pressed="${st.day===i}" ${n?"":"disabled"}><small>${i===0?"auj.":label(d)}</small><b>${d.getDate()}</b><em>${!open?"Fermé":n?n+" dispo":"Complet"}</em></button>`;}).join("")}</div>
+    ${groups.length?groups.map(([g,l])=>`<div class="grp">${g}</div><div class="slots">${l.map(x=>`<button class="slot" data-time="${x.m}" ${x.why?"disabled":""} aria-pressed="${st.time===x.m}">${toHM(x.m)}${x.why?`<small>${x.why}</small>`:""}</button>`).join("")}</div>`).join(""):`<p class="note">Plus de créneau ce jour-là.</p>`}
     ${st.time!==null?`<div class="pickd">Vous serez prise de <b>${toHM(st.time)}</b> à <b>${toHM(st.time+s.m)}</b></div>`:""}
-    <p class="note">Ouvert ${toHM(h[0])}–${toHM(h[1])}, pause ${toHM(LUNCH[0])}–${toHM(LUNCH[1])}. Seuls les horaires où la prestation entière tient avant la fermeture sont proposés.</p>
-    <div class="nav"><button class="btn btn-glass" data-act="back">Retour</button><button class="btn btn-main" data-act="next" ${st.time!==null?"":"disabled"}>Continuer</button></div>`;
+    <p class="note">Ouvert ${toHM(h[0])}–${toHM(h[1])}, pause ${toHM(LUNCH[0])}–${toHM(LUNCH[1])}.</p>
+    <div class="nav"><button class="btn btn-ghost" data-act="back">Retour</button><button class="btn btn-plum" data-act="next" ${st.time!==null?"":"disabled"}>Continuer</button></div>`;
   }else if(st.step===2){
-    sh.innerHTML=stepsBar()+`<h3>Vos coordonnées</h3><p class="note" style="margin:0">Pour vous envoyer la confirmation et le rappel.</p>
+    sh.innerHTML=stepsBar()+`<h3>Vos coordonnées</h3>
     <label for="f-name">Prénom et nom</label><input id="f-name" value="${st.name}" placeholder="Ex. Grâce Hounkpè" autocomplete="name">
     <label for="f-tel">Numéro WhatsApp</label><input id="f-tel" value="${st.tel}" placeholder="Ex. 01 97 00 00 00" inputmode="tel" autocomplete="tel">
-    <div class="nav"><button class="btn btn-glass" data-act="back">Retour</button><button class="btn btn-main" data-act="next" id="to-pay" ${st.name&&st.tel?"":"disabled"}>Continuer</button></div>`;
-    const chk=()=>{st.name=$("f-name").value.trim();st.tel=$("f-tel").value.trim();$("to-pay").disabled=!(st.name&&st.tel)};
+    <div class="nav"><button class="btn btn-ghost" data-act="back">Retour</button><button class="btn btn-plum" data-act="next" id="to-pay" ${st.name&&st.tel?"":"disabled"}>Continuer</button></div>`;
+    const chk=()=>{st.name=$("f-name").value.trim();st.tel=$("f-tel").value.trim();$("to-pay").disabled=!(st.name&&st.tel);};
     $("f-name").oninput=chk;$("f-tel").oninput=chk;
   }else if(st.step===3){
     sh.innerHTML=stepsBar()+`<h3>Bloquez votre créneau</h3>
     <div class="recap"><div class="row"><span>${s.n}</span><span>${fmt(s.p)} F</span></div>
-    <div class="row"><span>Rendez-vous</span><span>${dayTxt(st.day)}, ${toHM(st.time)}–${toHM(st.time+s.m)}</span></div>
+    <div class="row"><span>${dayTxt(st.day)}, ${toHM(st.time)}–${toHM(st.time+s.m)}</span><span></span></div>
     <div class="row"><span>Reste à payer au salon</span><span>${fmt(s.p-DEPOSIT)} F</span></div>
     <div class="row tot"><span>Acompte maintenant</span><span>${fmt(DEPOSIT)} F</span></div></div>
     <div class="ops"><button class="op" data-op="MTN MoMo" aria-pressed="${st.op==="MTN MoMo"}"><i style="background:#FFCC00"></i>MTN MoMo</button><button class="op" data-op="Moov Money" aria-pressed="${st.op==="Moov Money"}"><i style="background:#0066B3"></i>Moov Money</button></div>
-    <button class="btn btn-main" data-act="pay" style="width:100%" ${st.op?"":"disabled"}>Payer ${fmt(DEPOSIT)} FCFA</button>
-    <p class="note">Démo : aucun argent ne bouge. En vrai, la cliente valide le paiement sur son téléphone.</p>
-    <div class="nav"><button class="btn btn-glass" data-act="back">Retour</button></div>`;
+    <button class="btn btn-gold" data-act="pay" style="width:100%" ${st.op?"":"disabled"}>Payer ${fmt(DEPOSIT)} FCFA</button>
+    <p class="note">Démo : aucun argent ne bouge.</p>
+    <div class="nav"><button class="btn btn-ghost" data-act="back">Retour</button></div>`;
   }else{
     sh.innerHTML=`<div class="grab"></div><div class="done"><div class="ring"><svg viewBox="0 0 56 56"><path d="M15 29l9 9 18-20"/></svg></div>
     <h3>C'est réservé, ${st.name.split(" ")[0]} !</h3>
-    <p class="note" style="margin:4px 0 16px">${s.n}<br><b style="color:var(--ink)">${dayTxt(st.day)}, ${toHM(st.time)}–${toHM(st.time+s.m)}</b><br>Acompte de ${fmt(DEPOSIT)} F payé par ${st.op}. Vous recevrez un rappel la veille.</p>
-    <button class="btn btn-main" data-act="see-salon" style="width:100%">Voir ce que reçoit le salon →</button></div>`;
-    confetti();
+    <p class="note" style="margin:4px 0 16px">${s.n}<br><b style="color:var(--ink)">${dayTxt(st.day)}, ${toHM(st.time)}–${toHM(st.time+s.m)}</b><br>Acompte de ${fmt(DEPOSIT)} F payé par ${st.op}.</p>
+    <button class="btn btn-plum" data-act="see-salon" style="width:100%">Voir ce que reçoit le salon →</button></div>`;
   }
 }
 function renderSalon(){
   const sorted=[...bookings].sort((a,b)=>a.day-b.day||a.start-b.start);
   $("agenda").innerHTML=sorted.map((b,i)=>{const s=SERVICES.find(x=>x.id===b.svc);
-    const msg=`Bonjour ${b.who.split(" ")[0]}, c'est Maison Ayaba ✨ Petit rappel : votre rendez-vous « ${s.n} » est ${dayTxt(b.day)} à ${toHM(b.start)}. À très vite !`;
+    const msg=`Bonjour ${b.who.split(" ")[0]}, c'est Maison Ayaba 🌸 Rappel : votre rendez-vous « ${s.n} » est ${dayTxt(b.day)} à ${toHM(b.start)}. À très vite !`;
     return `<div class="rdv ${b.isNew?"fresh":""}"><div class="t">${toHM(b.start)}<small>${b.day===0?"auj.":label(days[b.day])+" "+days[b.day].getDate()}</small></div><div>
-    <div class="who">${b.who}${b.ex?' <span class="ex">(exemple)</span>':""}</div><div class="what">${s.n} · jusqu'à ${toHM(b.start+s.m)} · ${fmt(s.p)} F</div>
-    <div class="chips">${b.isNew?'<span class="chip new">Nouveau</span>':""}<span class="chip ${b.paid?"paid":"unpaid"}">${b.paid?"Acompte payé":"Sans acompte"}</span><button class="mini" data-remind="${i}">Rappel WhatsApp</button></div>
-    <div class="msg" id="m${i}" hidden><p id="mt${i}">${msg}</p><button class="mini" data-copy="mt${i}">Copier le message</button></div></div></div>`}).join("");
+    <div class="who">${b.who}${b.ex?' <span class="ex">(exemple)</span>':""}</div><div class="what">${s.n} · ${fmt(s.p)} F</div>
+    <div class="chips">${b.isNew?'<span class="chip new">Nouveau</span>':""}<span class="chip ${b.paid?"paid":"unpaid"}">${b.paid?"Acompte payé":"Sans acompte"}</span><button class="mini" data-remind="${i}">Rappel</button></div>
+    <div class="msg" id="m${i}" hidden><p id="mt${i}">${msg}</p><button class="mini" data-copy="mt${i}">Copier le message</button></div></div></div>`;}).join("");
   renderBlocks();
-  countUp($("k-rdv"),bookings.length);
-  countUp($("k-dep"),bookings.filter(b=>b.paid).length*DEPOSIT);
-  const ca=bookings.reduce((t,b)=>t+SERVICES.find(x=>x.id===b.svc).p,0), dep=bookings.filter(b=>b.paid).length*DEPOSIT;
-  countUp($("k-ca"),ca);
-  countUp($("k-rest"),ca-dep);
+  const ca=bookings.reduce((t,b)=>t+SERVICES.find(x=>x.id===b.svc).p,0),dep=bookings.filter(b=>b.paid).length*DEPOSIT;
+  countUp($("k-ca"),ca);$("k-rdv").textContent=bookings.length;countUp($("k-dep"),dep);countUp($("k-rest"),ca-dep);
 }
 function renderBlocks(){
   const sorted=blocks.map((b,i)=>({...b,i})).sort((a,b)=>a.day-b.day||a.start-b.start);
-  $("blocks").innerHTML=sorted.length?sorted.map(b=>`<div class="blk"><div><b>${dayTxt(b.day)}</b>, ${toHM(b.start)}–${toHM(b.end)}<br><span class="what">${b.reason}${b.ex?' <span class="ex">(exemple)</span>':""}</span></div><button class="mini" data-unblock="${b.i}">Retirer</button></div>`).join(""):`<p class="note" style="margin:0">Aucune indisponibilité. Toutes les heures d'ouverture sont réservables.</p>`;
-  $("b-day").innerHTML=openIdx.map(i=>`<option value="${i}">${dayTxt(i)}</option>`).join("");
-  fillHours();
+  $("blocks").innerHTML=sorted.length?sorted.map(b=>`<div class="blk"><div><b>${dayTxt(b.day)}</b>, ${toHM(b.start)}–${toHM(b.end)}<br><span class="what">${b.reason}${b.ex?' <span class="ex">(exemple)</span>':""}</span></div><button class="mini" data-unblock="${b.i}">Retirer</button></div>`).join(""):`<p class="note" style="margin:0">Aucune indisponibilité.</p>`;
+  $("b-day").innerHTML=openIdx.map(i=>`<option value="${i}">${dayTxt(i)}</option>`).join("");fillHours();
 }
-function fillHours(){
-  const di=+$("b-day").value,h=HOURS[days[di].getDay()];if(!h)return;
-  const opts=[];for(let m=h[0];m<=h[1];m+=STEP)opts.push(m);
+function fillHours(){const di=+$("b-day").value,h=HOURS[days[di].getDay()];if(!h)return;const opts=[];for(let m=h[0];m<=h[1];m+=STEP)opts.push(m);
   $("b-from").innerHTML=opts.slice(0,-1).map(m=>`<option value="${m}">${toHM(m)}</option>`).join("");
-  $("b-to").innerHTML=opts.slice(1).map(m=>`<option value="${m}" ${m===h[0]+120?"selected":""}>${toHM(m)}</option>`).join("");
-}
-function countUp(el,to){if(REDUCED){el.textContent=fmt(to);return}const t0=performance.now();const f=t=>{const k=Math.min(1,(t-t0)/700);el.textContent=fmt(Math.round(to*(1-Math.pow(1-k,3))));if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
-function view(v){
-  const c=v==="client";$("client").hidden=!c;$("salon").hidden=c;$("bar").hidden=!c;
+  $("b-to").innerHTML=opts.slice(1).map(m=>`<option value="${m}" ${m===h[0]+120?"selected":""}>${toHM(m)}</option>`).join("");}
+function countUp(el,to){if(REDUCED){el.textContent=fmt(to);return;}const t0=performance.now();const f=t=>{const k=Math.min(1,(t-t0)/700);el.textContent=fmt(Math.round(to*(1-Math.pow(1-k,3))));if(k<1)requestAnimationFrame(f);};requestAnimationFrame(f);}
+function view(v){const c=v==="client";$("client").hidden=!c;$("salon").hidden=c;$("bar").hidden=!c;
   $("v-client").setAttribute("aria-pressed",c);$("v-salon").setAttribute("aria-pressed",!c);
   $("hint").textContent=c?"Ce que voit une cliente quand elle ouvre le lien du salon.":"Ce que voit la gérante sur son téléphone.";
-  if(c){requestAnimationFrame(drawArt);updateBar()}else renderSalon();
-  window.scrollTo({top:0,behavior:REDUCED?"auto":"smooth"});
-}
-function confetti(){
-  if(REDUCED)return;const cv=$("confetti"),x=cv.getContext("2d");cv.width=innerWidth;cv.height=innerHeight;
-  const cols=["#F5B731","#FF7A59","#F2A7C3","#6EE7A8","#A99BFF"];
-  const P=Array.from({length:120},()=>({x:innerWidth/2,y:innerHeight*.55,vx:(Math.random()-.5)*12,vy:-Math.random()*14-4,r:Math.random()*6+3,c:cols[Math.floor(Math.random()*5)],a:Math.random()*6}));
-  let n=0;(function f(){x.clearRect(0,0,cv.width,cv.height);P.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=.2;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore()});if(++n<130)requestAnimationFrame(f);else x.clearRect(0,0,cv.width,cv.height)})();
-}
-async function copy(text,btn){try{await navigator.clipboard.writeText(text);btn.textContent="Copié ✓"}catch(e){btn.textContent="Sélectionnez le texte pour copier"}}
+  if(c)updateBar();else renderSalon();
+  window.scrollTo({top:0,behavior:REDUCED?"auto":"smooth"});}
+async function copy(text,btn){try{await navigator.clipboard.writeText(text);btn.textContent="Copié ✓";}catch(e){btn.textContent="Sélectionnez le texte";}}
 
 document.addEventListener("click",e=>{
-  if(e.target.id==="scrim"){closeSheet();return}
+  if(e.target.id==="scrim"){closeSheet();return;}
   const t=e.target.closest("button");if(!t)return;const a=t.dataset.act;
   if(t.id==="v-client")view("client");
   if(t.id==="v-salon")view("salon");
-  if(t.id==="go-book"||t.id==="bar-book"){st.step=st.svc?1:0;openSheet()}
+  if(t.id==="go-book"||t.id==="bar-book"){st.step=st.svc?1:0;openSheet();}
   if(t.id==="go-wa")$("wa-note").hidden=!$("wa-note").hidden;
-  if(t.dataset.svc){st.svc=t.dataset.svc;st.time=null;st.day=null;st.step=1;renderServices();updateBar();openSheet()}
-  if(t.dataset.pick){st.svc=t.dataset.pick;st.time=null;st.day=null;renderServices();updateBar();renderSheet()}
-  if(t.dataset.day){st.day=+t.dataset.day;st.time=null;renderSheet()}
-  if(t.dataset.time){st.time=+t.dataset.time;renderSheet()}
-  if(t.dataset.op){st.op=t.dataset.op;renderSheet()}
+  if(t.dataset.svc){st.svc=t.dataset.svc;st.time=null;st.day=null;st.step=1;updateBar();openSheet();}
+  if(t.dataset.pick){st.svc=t.dataset.pick;st.time=null;st.day=null;updateBar();renderSheet();}
+  if(t.dataset.day){st.day=+t.dataset.day;st.time=null;renderSheet();}
+  if(t.dataset.time){st.time=+t.dataset.time;renderSheet();}
+  if(t.dataset.op){st.op=t.dataset.op;renderSheet();}
   if(a==="close")closeSheet();
-  if(a==="next"){st.step++;renderSheet()}
-  if(a==="back"){st.step--;renderSheet()}
-  if(a==="pay"){
-    const s=SERVICES.find(x=>x.id===st.svc);
-    if(slotState(st.day,st.time,s.m)){st.step=1;st.time=null;renderSheet();return}  // créneau pris entre-temps
-    bookings.forEach(b=>b.isNew=false);bookings.push({who:st.name,svc:st.svc,day:st.day,start:st.time,paid:true,isNew:true});st.step=4;renderSheet()}
-  if(a==="see-salon"){closeSheet();Object.assign(st,{step:0,svc:null,day:null,time:null,op:null});renderServices();view("salon")}
-  if(t.dataset.remind!==undefined){const m=$("m"+t.dataset.remind);m.hidden=!m.hidden}
+  if(a==="next"){st.step++;renderSheet();}
+  if(a==="back"){st.step--;renderSheet();}
+  if(a==="pay"){const s=svcObj();if(slotState(st.day,st.time,s.m)){st.step=1;st.time=null;renderSheet();return;}bookings.forEach(b=>b.isNew=false);bookings.push({who:st.name,svc:st.svc,day:st.day,start:st.time,paid:true,isNew:true});st.step=4;renderSheet();}
+  if(a==="see-salon"){closeSheet();Object.assign(st,{step:0,svc:null,day:null,time:null,op:null});view("salon");}
+  if(t.dataset.remind!==undefined){const m=$("m"+t.dataset.remind);m.hidden=!m.hidden;}
   if(t.dataset.copy)copy($(t.dataset.copy).textContent.trim(),t);
   if(t.id==="copy-link")copy("berodak.github.io/demo",t);
-  if(t.dataset.unblock!==undefined){blocks.splice(+t.dataset.unblock,1);renderBlocks()}
-  if(t.id==="b-add"){
-    const day=+$("b-day").value,start=+$("b-from").value,end=+$("b-to").value,reason=$("b-why").value.trim()||"Indisponible";
-    if(end<=start){$("b-err").textContent="L'heure de fin doit être après l'heure de début.";$("b-err").hidden=false;return}
+  if(t.dataset.unblock!==undefined){blocks.splice(+t.dataset.unblock,1);renderBlocks();}
+  if(t.id==="b-add"){const day=+$("b-day").value,start=+$("b-from").value,end=+$("b-to").value,reason=$("b-why").value.trim()||"Indisponible";
+    if(end<=start){$("b-err").textContent="L'heure de fin doit être après le début.";$("b-err").hidden=false;return;}
     const clash=bookings.find(b=>b.day===day&&overlap(start,end,b.start,b.start+durOf(b)));
-    if(clash){$("b-err").textContent=`Impossible : ${clash.who} a déjà rendez-vous à ${toHM(clash.start)}. Déplacez d'abord ce rendez-vous.`;$("b-err").hidden=false;return}
-    $("b-err").hidden=true;blocks.push({day,start,end,reason});$("b-why").value="";renderBlocks();
-  }
+    if(clash){$("b-err").textContent=`Impossible : ${clash.who} a déjà rendez-vous à ${toHM(clash.start)}.`;$("b-err").hidden=false;return;}
+    $("b-err").hidden=true;blocks.push({day,start,end,reason});$("b-why").value="";renderBlocks();}
 });
-document.addEventListener("change",e=>{if(e.target.id==="b-day")fillHours()});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("scrim").hidden)closeSheet()});
-renderGallery();renderServices();updateBar();
-
-/* ---- Vie ---- */
-// Mot qui change dans le titre
-(()=>{const words=["tresses","ongles","maquillage","soin","locks"];let i=0;const el=$("rot");if(REDUCED)return;
-  setInterval(()=>{if(document.hidden)return;i=(i+1)%words.length;el.textContent=words[i];el.classList.remove("swap");void el.offsetWidth;el.classList.add("swap")},2600)})();
-// Apparitions au défilement
-(()=>{const els=[...document.querySelectorAll(".reveal")];if(REDUCED||!("IntersectionObserver" in window))return;
-  els.forEach(e=>{if(e.getBoundingClientRect().top>innerHeight*.9)e.classList.add("pre")});
-  const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.remove("pre");setTimeout(()=>en.target.classList.add("done"),900);io.unobserve(en.target)}}),{threshold:.15});
-  els.forEach(e=>io.observe(e))})();
-// Parallaxe douce du motif
-(()=>{if(REDUCED)return;const cv=$("hero-art");let y=-1,raf=null;
-  addEventListener("scroll",()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=null;const v=Math.min(scrollY,600)*.25;if(Math.abs(v-y)>.5){y=v;cv.style.translate=`0 ${v.toFixed(1)}px`}})},{passive:true})})();
-// Galerie qui glisse toute seule jusqu'à ce qu'on la touche
-(()=>{if(REDUCED)return;const g=$("gallery");let stop=false;["pointerdown","wheel","touchstart"].forEach(ev=>g.addEventListener(ev,()=>stop=true,{passive:true}));
-  setInterval(()=>{if(stop||document.hidden||$("client").hidden)return;const w=g.firstElementChild.getBoundingClientRect().width+10;const end=g.scrollLeft+g.clientWidth>=g.scrollWidth-4;g.scrollTo({left:end?0:g.scrollLeft+w,behavior:"smooth"})},3500)})();
-// Poussière dorée
-(()=>{if(REDUCED)return;const cv=$("dust"),x=cv.getContext("2d");let W,H,P=[],run=true;
-  const size=()=>{const d=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*d;cv.height=H*d;x.setTransform(d,0,0,d,0,0)};size();addEventListener("resize",size);
-  for(let i=0;i<38;i++)P.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.6+.4,vy:-(Math.random()*.25+.06),vx:(Math.random()-.5)*.12,a:Math.random()*Math.PI*2});
-  (function f(){if(run){x.clearRect(0,0,W,H);for(const p of P){p.y+=p.vy;p.x+=p.vx;p.a+=.02;if(p.y<-5){p.y=H+5;p.x=Math.random()*W}x.globalAlpha=.25+Math.sin(p.a)*.2;x.fillStyle="#F5B731";x.beginPath();x.arc(p.x,p.y,p.r,0,7);x.fill()}}requestAnimationFrame(f)})();
-  document.addEventListener("visibilitychange",()=>{run=!document.hidden;document.body.classList.toggle("paused",document.hidden)})})();
-
-requestAnimationFrame(drawArt);addEventListener("resize",()=>{if(!$("client").hidden)drawArt()});
+document.addEventListener("change",e=>{if(e.target.id==="b-day")fillHours();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("scrim").hidden)closeSheet();});
+document.addEventListener("visibilitychange",()=>document.body.classList.toggle("paused",document.hidden));
+renderServices();updateBar();
 </script>
 
 </body>
