@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Démo Maison Ayaba : réservation en ligne pour salon de beauté à Cotonou.">
+<meta name="description" content="Demo Maison Ayaba : reservation en ligne pour salon a Cotonou.">
 <style>:root{color-scheme:light dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Maison Ayaba</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -168,6 +168,29 @@ select{width:100%;border:1px solid var(--line);background:var(--paper);color:var
 .blk{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13.5px}.blk .what{font-size:12.5px;color:var(--muted)}
 @media (pointer:coarse){.btn{min-height:44px}}
 body.paused *,body.paused *::before,body.paused *::after{animation-play-state:paused!important}
+
+:root{--accent:var(--plum);--accent-soft:var(--plum-soft)}
+.btn-accent{background:var(--accent);color:#fff}
+.plan .t{font-size:24px}
+.plan-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.plan-opt{border:1.5px solid var(--line);border-radius:12px;padding:12px 10px;font-weight:700;font-family:var(--body);background:var(--card);font-size:13.5px}
+.plan-opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.ana-top{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:2px 0 14px}
+.ana-top>div{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px}
+.ana-top span{display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px}
+.ana-top b{font-family:var(--display);font-size:24px;font-variant-numeric:tabular-nums;font-weight:600}
+.ana-top b.up{color:var(--ok)}.ana-top b.down{color:var(--warn)}
+.bars{display:flex;align-items:flex-end;gap:8px;height:130px;padding-top:6px}
+.bars .acol{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;justify-content:flex-end;min-width:0}
+.bars .acol i{width:100%;background:var(--accent);border-radius:6px 6px 0 0;min-height:4px}
+.bars .acol.last i{background:var(--gold)}
+.bars .acol small{font-size:10px;color:var(--muted)}
+.ana-best{font-size:13.5px;color:var(--muted);margin-top:14px}
+.ana-best b{color:var(--ink);font-weight:600}
+.analytics{position:relative}
+.lock{position:absolute;inset:0;background:color-mix(in srgb,var(--card) 80%,transparent);backdrop-filter:blur(5px);border-radius:22px;display:grid;place-items:center;text-align:center;padding:24px}
+.lock b{font-family:var(--display);font-size:24px}
+.lock p{color:var(--muted);font-size:13.5px;margin:6px auto 14px;max-width:32ch}
 </style>
 </head>
 <body>
@@ -231,6 +254,19 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
         <div class="kpi"><b id="k-rest">0</b><em>F à encaisser</em></div>
       </div>
     </div>
+    <section class="card plan">
+      <span class="eyebrow">Votre abonnement</span><h2 class="t">Votre offre</h2>
+      <div class="plan-row"><button class="plan-opt" data-plan="gold">Gold &middot; 10&nbsp;000 F</button><button class="plan-opt" data-plan="diamant">Diamant &#128142; &middot; 15&nbsp;000 F</button></div>
+      <p class="lead" id="plan-note" style="margin:12px 0 0"></p>
+    </section>
+    <section class="card analytics" id="analytics">
+      <span class="eyebrow">Diamant</span><h2 class="t">Votre &eacute;volution</h2>
+      <p class="lead">Votre chiffre d'affaires, mois par mois.</p>
+      <div class="ana-top"><div><span>Ce mois-ci</span><b id="ana-now">&mdash;</b></div><div><span>vs mois dernier</span><b id="ana-growth" class="up">&mdash;</b></div></div>
+      <div class="bars" id="bars"></div>
+      <p class="ana-best" id="ana-best"></p>
+      <div class="lock" id="lock" hidden><div><b>D&eacute;bloquez vos analyses</b><p>Suivez l'&eacute;volution de votre business avec l'offre Diamant.</p><button class="btn btn-accent" data-plan="diamant">Passer &agrave; Diamant</button></div></div>
+    </section>
     <section class="card">
       <span class="eyebrow">Agenda</span><h2 class="t">Rendez-vous à venir</h2>
       <p class="lead">Les 3 premiers sont des exemples.</p>
@@ -279,6 +315,22 @@ const SERVICES=[
 const DEPOSIT=2000, REDUCED=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const fmt=n=>n.toLocaleString("fr-FR").replace(/ | /g," ");
 const $=id=>document.getElementById(id);
+const MONTHS=["Juin","Juil","Août","Sep","Oct","Nov"];
+const REVENUE=[185000,210000,195000,255000,290000,335000];const TOPSELL="Tresses box braids";let plan="diamant";
+function renderAnalytics(){
+  const bars=document.getElementById("bars");if(!bars)return;
+  const max=Math.max.apply(null,REVENUE);
+  bars.innerHTML=REVENUE.map(function(v,i){return '<div class="acol '+(i===REVENUE.length-1?'last':'')+'"><i style="height:'+(Math.round(v/max*104)+4)+'px"></i><small>'+MONTHS[i]+'</small></div>';}).join("");
+  const now=REVENUE[REVENUE.length-1],prev=REVENUE[REVENUE.length-2];
+  document.getElementById("ana-now").textContent=fmt(now)+" F";
+  const g=Math.round((now-prev)/prev*100),gel=document.getElementById("ana-growth");
+  gel.textContent=(g>=0?"+":"")+g+" %";gel.className=g>=0?"up":"down";
+  document.getElementById("ana-best").innerHTML='Votre meilleure vente ce mois : <b>'+TOPSELL+'</b>.';
+  Array.prototype.forEach.call(document.querySelectorAll(".plan-opt"),function(b){b.setAttribute("aria-pressed",b.dataset.plan===plan);});
+  document.getElementById("lock").hidden=(plan==="diamant");
+  document.getElementById("plan-note").textContent=plan==="diamant"?"Offre Diamant : tout le Gold, plus le suivi de votre chiffre d'affaires.":"Offre Gold : page, réservations et acompte Mobile Money. Passez à Diamant pour suivre vos chiffres.";
+}
+
 const HOURS={0:null,1:[540,1200],2:[540,1200],3:[540,1200],4:[540,1200],5:[540,1200],6:[540,1080]};
 const LUNCH=[780,840], STEP=30, LEAD=60;
 const toHM=m=>String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
@@ -373,7 +425,7 @@ function renderSalon(){
     <div class="msg" id="m${i}" hidden><p id="mt${i}">${msg}</p><button class="mini" data-copy="mt${i}">Copier le message</button></div></div></div>`;}).join("");
   renderBlocks();
   const ca=bookings.reduce((t,b)=>t+SERVICES.find(x=>x.id===b.svc).p,0),dep=bookings.filter(b=>b.paid).length*DEPOSIT;
-  countUp($("k-ca"),ca);$("k-rdv").textContent=bookings.length;countUp($("k-dep"),dep);countUp($("k-rest"),ca-dep);
+  countUp($("k-ca"),ca);$("k-rdv").textContent=bookings.length;countUp($("k-dep"),dep);countUp($("k-rest"),ca-dep);renderAnalytics();
 }
 function renderBlocks(){
   const sorted=blocks.map((b,i)=>({...b,i})).sort((a,b)=>a.day-b.day||a.start-b.start);
@@ -409,6 +461,7 @@ document.addEventListener("click",e=>{
   if(a==="pay"){const s=svcObj();if(slotState(st.day,st.time,s.m)){st.step=1;st.time=null;renderSheet();return;}bookings.forEach(b=>b.isNew=false);bookings.push({who:st.name,svc:st.svc,day:st.day,start:st.time,paid:true,isNew:true});st.step=4;renderSheet();}
   if(a==="see-salon"){closeSheet();Object.assign(st,{step:0,svc:null,day:null,time:null,op:null});view("salon");}
   if(t.dataset.remind!==undefined){const m=$("m"+t.dataset.remind);m.hidden=!m.hidden;}
+  if(t.dataset.plan){plan=t.dataset.plan;renderAnalytics();}
   if(t.dataset.copy)copy($(t.dataset.copy).textContent.trim(),t);
   if(t.id==="copy-link")copy("berodak.github.io/demo",t);
   if(t.dataset.unblock!==undefined){blocks.splice(+t.dataset.unblock,1);renderBlocks();}

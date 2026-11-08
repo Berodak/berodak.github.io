@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Démo Saveurs d'Afrique : menu et commande en ligne pour restaurant à Cotonou.">
+<meta name="description" content="Demo Saveurs d'Afrique : menu et commande en ligne a Cotonou.">
 <style>:root{color-scheme:light dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Saveurs d'Afrique</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -131,6 +131,29 @@ input,select{width:100%;border:1px solid var(--line);background:var(--paper);col
 .ex{font-size:10.5px;color:var(--muted);font-weight:500}
 @media (pointer:coarse){.btn{min-height:44px}}
 body.paused *,body.paused *::before,body.paused *::after{animation-play-state:paused!important}
+
+:root{--accent:var(--ember);--accent-soft:var(--ember-soft)}
+.btn-accent{background:var(--accent);color:#fff}
+.plan .t{font-size:24px}
+.plan-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.plan-opt{border:1.5px solid var(--line);border-radius:12px;padding:12px 10px;font-weight:700;font-family:var(--body);background:var(--card);font-size:13.5px}
+.plan-opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.ana-top{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:2px 0 14px}
+.ana-top>div{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px}
+.ana-top span{display:block;font-size:11.5px;color:var(--muted);margin-bottom:3px}
+.ana-top b{font-family:var(--display);font-size:24px;font-variant-numeric:tabular-nums;font-weight:600}
+.ana-top b.up{color:var(--ok)}.ana-top b.down{color:var(--warn)}
+.bars{display:flex;align-items:flex-end;gap:8px;height:130px;padding-top:6px}
+.bars .acol{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;justify-content:flex-end;min-width:0}
+.bars .acol i{width:100%;background:var(--accent);border-radius:6px 6px 0 0;min-height:4px}
+.bars .acol.last i{background:var(--gold)}
+.bars .acol small{font-size:10px;color:var(--muted)}
+.ana-best{font-size:13.5px;color:var(--muted);margin-top:14px}
+.ana-best b{color:var(--ink);font-weight:600}
+.analytics{position:relative}
+.lock{position:absolute;inset:0;background:color-mix(in srgb,var(--card) 80%,transparent);backdrop-filter:blur(5px);border-radius:22px;display:grid;place-items:center;text-align:center;padding:24px}
+.lock b{font-family:var(--display);font-size:24px}
+.lock p{color:var(--muted);font-size:13.5px;margin:6px auto 14px;max-width:32ch}
 </style>
 </head>
 <body>
@@ -190,6 +213,19 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
         <div class="kpi"><b id="k-tab">0</b><em>tables réservées</em></div>
       </div>
     </div>
+    <section class="card plan">
+      <span class="eyebrow">Votre abonnement</span><h2 class="t">Votre offre</h2>
+      <div class="plan-row"><button class="plan-opt" data-plan="gold">Gold &middot; 10&nbsp;000 F</button><button class="plan-opt" data-plan="diamant">Diamant &#128142; &middot; 15&nbsp;000 F</button></div>
+      <p class="lead" id="plan-note" style="margin:12px 0 0"></p>
+    </section>
+    <section class="card analytics" id="analytics">
+      <span class="eyebrow">Diamant</span><h2 class="t">Votre &eacute;volution</h2>
+      <p class="lead">Votre chiffre d'affaires, mois par mois.</p>
+      <div class="ana-top"><div><span>Ce mois-ci</span><b id="ana-now">&mdash;</b></div><div><span>vs mois dernier</span><b id="ana-growth" class="up">&mdash;</b></div></div>
+      <div class="bars" id="bars"></div>
+      <p class="ana-best" id="ana-best"></p>
+      <div class="lock" id="lock" hidden><div><b>D&eacute;bloquez vos analyses</b><p>Suivez l'&eacute;volution de votre business avec l'offre Diamant.</p><button class="btn btn-accent" data-plan="diamant">Passer &agrave; Diamant</button></div></div>
+    </section>
     <section class="card">
       <span class="eyebrow">Service</span><h2 class="t">Commandes &amp; tables</h2>
       <p class="lead">Les 3 premières lignes sont des exemples.</p>
@@ -239,6 +275,22 @@ const CATS=Object.keys(MENU);
 const REDUCED=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const fmt=n=>n.toLocaleString("fr-FR").replace(/ | /g," ");
 const $=id=>document.getElementById(id);
+const MONTHS=["Juin","Juil","Août","Sep","Oct","Nov"];
+const REVENUE=[720000,810000,780000,940000,1020000,1180000];const TOPSELL="Poulet braisé";let plan="diamant";
+function renderAnalytics(){
+  const bars=document.getElementById("bars");if(!bars)return;
+  const max=Math.max.apply(null,REVENUE);
+  bars.innerHTML=REVENUE.map(function(v,i){return '<div class="acol '+(i===REVENUE.length-1?'last':'')+'"><i style="height:'+(Math.round(v/max*104)+4)+'px"></i><small>'+MONTHS[i]+'</small></div>';}).join("");
+  const now=REVENUE[REVENUE.length-1],prev=REVENUE[REVENUE.length-2];
+  document.getElementById("ana-now").textContent=fmt(now)+" F";
+  const g=Math.round((now-prev)/prev*100),gel=document.getElementById("ana-growth");
+  gel.textContent=(g>=0?"+":"")+g+" %";gel.className=g>=0?"up":"down";
+  document.getElementById("ana-best").innerHTML='Votre meilleure vente ce mois : <b>'+TOPSELL+'</b>.';
+  Array.prototype.forEach.call(document.querySelectorAll(".plan-opt"),function(b){b.setAttribute("aria-pressed",b.dataset.plan===plan);});
+  document.getElementById("lock").hidden=(plan==="diamant");
+  document.getElementById("plan-note").textContent=plan==="diamant"?"Offre Diamant : tout le Gold, plus le suivi de votre chiffre d'affaires.":"Offre Gold : page, réservations et acompte Mobile Money. Passez à Diamant pour suivre vos chiffres.";
+}
+
 const allDishes=Object.values(MENU).flat();
 const dishById=id=>allDishes.find(d=>d.id===id);
 let cat=CATS[0], cart={};
@@ -302,7 +354,7 @@ function renderResto(){
     return `<div class="ord ${f.isNew?"fresh":""}"><div class="ic">🛵</div><div><div class="who">${f.who}${f.ex?' <span class="ex">(exemple)</span>':""}</div><div class="what">${items} · ${fmt(tot)} F</div><div class="chips">${f.isNew?'<span class="chip new">Nouveau</span>':""}<span class="chip paid">${f.paid?"Payé":"À payer"}</span></div></div></div>`;
   }).join("");
   const ca=feed.filter(f=>f.type==="order").reduce((t,f)=>t+Object.entries(f.items).reduce((s,[id,q])=>s+dishById(id).p*q,0),0);
-  countUp($("k-ca"),ca);$("k-ord").textContent=feed.filter(f=>f.type==="order").length;$("k-tab").textContent=feed.filter(f=>f.type==="table").length;
+  countUp($("k-ca"),ca);$("k-ord").textContent=feed.filter(f=>f.type==="order").length;$("k-tab").textContent=feed.filter(f=>f.type==="table").length;renderAnalytics();
 }
 function countUp(el,to){if(REDUCED){el.textContent=fmt(to);return;}const t0=performance.now();const f=t=>{const k=Math.min(1,(t-t0)/700);el.textContent=fmt(Math.round(to*(1-Math.pow(1-k,3))));if(k<1)requestAnimationFrame(f);};requestAnimationFrame(f);}
 function view(v){const c=v==="client";$("client").hidden=!c;$("resto").hidden=c;
@@ -331,6 +383,7 @@ document.addEventListener("click",e=>{
     feed.forEach(f=>f.isNew=false);feed.unshift({type:"table",who:nm||"Client",size:+sz,time:tm,isNew:true});tableDone(nm);}
   if(a==="see-resto"){closeSheet();view("resto");}
   if(a==="close")closeSheet();
+  if(t.dataset.plan){plan=t.dataset.plan;renderAnalytics();}
   if(t.dataset.copy)copy($(t.dataset.copy).textContent.trim(),t);
   if(t.id==="copy-link")copy("berodak.github.io/demo-resto",t);
 });
