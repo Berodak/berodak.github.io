@@ -3,148 +3,144 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Démo : réservation en ligne pour l'hôtel fictif Résidence Lagune, Cotonou.">
-<style>:root{color-scheme:dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:15px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
-<title>Prototype Hôtel Lagune</title>
+<meta name="description" content="Démo Résidence Lagune : réservation en ligne pour hôtel à Cotonou.">
+<style>:root{color-scheme:light dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Résidence Lagune</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,500&family=Figtree:wght@400;500;600;700&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
-/* Layout : appli mobile, un hôtel au bord de la lagune. Thème sombre nuit bleue, accent sable doré et turquoise lagune. Un seul thème. */
+/* Hôtel — clair et élégant. Papier lagune, encre sarcelle, accent sarcelle + or. Même signature que le salon, couleur différente. */
 :root{
-  --night:#0B1230; --deep:#12204A; --glass:rgba(255,255,255,.07); --glass-2:rgba(255,255,255,.12);
-  --line:rgba(255,255,255,.14); --ink:#F2F5FF; --muted:#AEB7D8;
-  --sand:#E9B470; --sand-ink:#2A1A00; --lagoon:#4FD1C5; --coral:#FF8A6B; --ok:#64E0A3;
-  --display:"Fraunces","Georgia",serif; --body:"Figtree","Segoe UI",system-ui,sans-serif;
-  --ease:cubic-bezier(.2,.8,.2,1); color-scheme:dark;
+  --paper:#EEF3F2; --card:#FFFFFF; --ink:#14201E; --muted:#6E827E; --line:#DCE7E4;
+  --teal:#0E7C7B; --teal-soft:#DAEEEC; --gold:#C2954A; --ok:#2E8B64; --ok-soft:#DCF1E7; --warn:#A9611B;
+  --display:"Cormorant Garamond",Georgia,serif; --body:"Figtree","Segoe UI",system-ui,sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);
 }
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0F1716; --card:#19231F; --ink:#EFF5F3; --muted:#9FB4AF; --line:#2A3833;
+  --teal:#5FD6CF; --teal-soft:#15322F; --gold:#E0B96A; --ok:#6FD4A1; --ok-soft:#163528; --warn:#E3A85C; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0F1716; --card:#19231F; --ink:#EFF5F3; --muted:#9FB4AF; --line:#2A3833;
+  --teal:#5FD6CF; --teal-soft:#15322F; --gold:#E0B96A; --ok:#6FD4A1; --ok-soft:#163528; --warn:#E3A85C; color-scheme:dark}
 *{box-sizing:border-box}
 html,body{overflow-x:hidden;overflow-x:clip}
-html{background:var(--night)}
-body{background:var(--night);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 110px}
-.aura{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.aura i{position:absolute;border-radius:50%;filter:blur(72px);opacity:.5}
-.aura i:nth-child(1){width:420px;height:420px;background:#2C4FC9;top:-130px;left:-120px}
-.aura i:nth-child(2){width:360px;height:360px;background:var(--lagoon);top:28%;right:-170px;opacity:.3}
-.aura i:nth-child(3){width:380px;height:380px;background:var(--sand);bottom:-170px;left:8%;opacity:.22}
-@media (prefers-reduced-motion:no-preference){.aura i{animation:drift 20s ease-in-out infinite alternate}.aura i:nth-child(2){animation-duration:24s}.aura i:nth-child(3){animation-duration:28s}@keyframes drift{to{transform:translate(50px,40px) scale(1.14)}}}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 108px}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
-button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--sand);outline-offset:2px}
-.wrap{position:relative;z-index:1;max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
-.switch{display:grid;grid-template-columns:1fr 1fr;background:var(--glass);border:1px solid var(--line);border-radius:999px;padding:4px;backdrop-filter:blur(12px)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;line-height:1.05;letter-spacing:-.01em}
+.wrap{max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.switch{display:grid;grid-template-columns:1fr 1fr;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px}
 .switch button{padding:10px 8px;border-radius:999px;font-weight:600;color:var(--muted);font-size:14px}
-.switch button[aria-pressed="true"]{background:var(--ink);color:var(--night)}
+.switch button[aria-pressed="true"]{background:var(--teal);color:#fff}
 .hint{font-size:13px;color:var(--muted);text-align:center;margin:-4px 0 0;text-wrap:balance}
-
-.hero{position:relative;border-radius:30px;overflow:hidden;min-height:430px;display:flex;flex-direction:column;justify-content:flex-end;padding:22px;isolation:isolate}
-.hero canvas{position:absolute;inset:0;width:100%;height:100%;z-index:-2}
-.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(11,18,48,0) 30%,rgba(11,18,48,.6) 62%,rgba(11,18,48,.97))}
-.tag{position:absolute;top:16px;left:16px;right:16px;display:flex;justify-content:space-between;gap:8px}
-.pill{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:6px 11px;border-radius:999px;background:rgba(11,18,48,.55);border:1px solid var(--line);backdrop-filter:blur(8px)}
-.pill.live{color:var(--ok)}.pill.live::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:7px;vertical-align:1px}
-.kicker{font-family:var(--display);font-style:italic;font-size:19px;color:var(--sand);margin:0}
-h1{font-family:var(--display);font-weight:700;font-size:clamp(40px,12vw,58px);line-height:.95;margin:4px 0 12px;letter-spacing:-.01em}
-.where{display:flex;flex-wrap:wrap;gap:8px 14px;color:var(--muted);font-size:14px;margin:0 0 16px}
-.where b{color:var(--ink);font-weight:600}
-.stars{color:var(--sand);letter-spacing:2px}
-.cta{display:grid;grid-template-columns:1.4fr 1fr;gap:10px}
-.btn{border-radius:15px;padding:14px 12px;font-weight:700;text-align:center;font-size:15px;transition:transform .15s}
-.btn:active{transform:scale(.97)}
-.btn-main{background:var(--sand);color:var(--sand-ink);box-shadow:0 10px 28px -12px rgba(233,180,112,.7)}
-.btn-glass{background:var(--glass-2);border:1px solid var(--line);backdrop-filter:blur(10px)}
-.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
-.amen{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
-.amen span{font-size:12.5px;font-weight:600;padding:5px 11px;border-radius:999px;background:var(--glass);border:1px solid var(--line)}
-
-.card{background:var(--glass);border:1px solid var(--line);border-radius:24px;padding:20px;backdrop-filter:blur(14px);overflow:hidden;isolation:isolate}
-h2{font-family:var(--display);font-weight:600;font-size:21px;margin:0 0 4px}
-.sub{color:var(--muted);font-size:13.5px;margin:0 0 14px}
-
-.room{display:grid;grid-template-columns:96px 1fr;gap:14px;padding:12px;border-radius:18px;border:1px solid transparent;transition:background .2s,border-color .2s;width:100%;text-align:left;align-items:center}
-.room+.room{margin-top:4px}
-.room:hover{background:var(--glass)}
-.room.sel{background:rgba(233,180,112,.12);border-color:rgba(233,180,112,.5)}
-.room .pic{width:96px;height:72px;border-radius:12px;position:relative;overflow:hidden}
-.room .pic canvas{position:absolute;inset:0;width:100%;height:100%}
-.room .n{font-family:var(--display);font-weight:600;font-size:17px}
-.room .d{font-size:12.5px;color:var(--muted);margin-top:1px}
-.room .price{margin-top:6px;font-weight:700;font-variant-numeric:tabular-nums}
-.room .price span{font-weight:500;color:var(--muted);font-size:12.5px}
-
+.hero{position:relative;border-radius:26px;overflow:hidden;min-height:400px;display:flex;flex-direction:column;justify-content:flex-end;padding:22px;color:#fff;isolation:isolate;border:1px solid var(--line)}
+.hero .ph{position:absolute;inset:0;z-index:-2;background:radial-gradient(120% 90% at 80% 10%, rgba(255,255,255,.22), transparent 55%),linear-gradient(150deg,#1AA09A 0%,#0C5E5C 55%,#06302F 100%)}
+.hero .ph::after{content:"Votre photo ici";position:absolute;top:14px;left:14px;font-family:var(--body);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.3);padding:5px 10px;border-radius:999px;background:rgba(0,0,0,.12)}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 40%,rgba(6,24,23,.72))}
+.hpill{position:absolute;top:14px;right:14px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:6px 11px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);color:#fff}
+.open{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#fff;margin-bottom:10px}
+.open i{width:8px;height:8px;border-radius:50%;background:#7BE0A8;box-shadow:0 0 0 3px rgba(123,224,168,.3)}
+.hero h1{font-size:clamp(40px,11vw,58px);font-weight:700}
+.hero .sub{font-family:var(--body);font-size:14px;color:rgba(255,255,255,.85);margin:6px 0 0;display:flex;flex-wrap:wrap;gap:6px 14px}
+.stars{color:var(--gold);letter-spacing:2px}
+.cta{display:grid;grid-template-columns:1.5fr 1fr;gap:10px;margin-top:18px}
+.btn{border-radius:13px;padding:14px 12px;font-weight:700;text-align:center;font-size:15px;font-family:var(--body);transition:transform .15s var(--ease)}
+.btn:active{transform:scale(.98)}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-gold{background:var(--gold);color:#241206}
+.btn-soft{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;backdrop-filter:blur(6px)}
+.btn-ghost{background:var(--card);border:1px solid var(--line);color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px}
+.eyebrow{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);font-weight:700}
+h2.t{font-size:28px;margin:6px 0 0}
+.lead{color:var(--muted);font-size:13.5px;margin:4px 0 16px}
+.room{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);width:100%;text-align:left}
+.room:last-child{border-bottom:0}
+.room .l .n{font-family:var(--display);font-size:20px;font-weight:600}
+.room .l .d{font-size:12.5px;color:var(--muted)}
+.room .r{display:flex;align-items:baseline;gap:12px;white-space:nowrap}
+.room .p{font-family:var(--display);font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.room .p span{font-family:var(--body);font-size:11px;color:var(--muted);font-weight:500}
+.room .go{font-size:13px;font-weight:700;color:var(--teal)}
+.dots{flex:1;border-bottom:1px dotted var(--line);transform:translateY(-4px);min-width:10px}
+.gal{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gal .tile{position:relative;aspect-ratio:1;border-radius:16px;overflow:hidden;display:flex;align-items:flex-end;padding:12px;color:#fff;border:1px solid var(--line)}
+.gal .tile:first-child{grid-column:1 / -1;aspect-ratio:16/10}
+.gal .tile b{position:relative;font-family:var(--display);font-size:18px;font-weight:600}
+.gal .tile .tag{position:absolute;top:10px;left:10px;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.3);padding:3px 8px;border-radius:999px}
+.note{font-size:12.5px;color:var(--muted);margin:12px 0 0}
 .info{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.info>div{background:var(--glass);border-radius:14px;padding:12px}
-.info small{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
-.info b{font-size:14px;font-weight:600}
-
-.bar{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:linear-gradient(180deg,rgba(11,18,48,0),rgba(11,18,48,.92) 35%)}
-.bar .in{max-width:460px;margin:0 auto;display:flex;gap:10px;align-items:center;background:rgba(18,32,74,.78);border:1px solid var(--line);border-radius:20px;padding:8px 8px 8px 16px;backdrop-filter:blur(16px)}
-.bar .t{flex:1;min-width:0;font-size:13px;color:var(--muted);line-height:1.3}
-.bar .t b{display:block;color:var(--ink);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-.scrim{position:fixed;inset:0;z-index:30;background:rgba(4,7,22,.62);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center}
-.sheet{width:100%;max-width:480px;max-height:92%;overflow:auto;background:#101B42;border:1px solid var(--line);border-bottom:0;border-radius:28px 28px 0 0;padding:10px 20px calc(22px + env(safe-area-inset-bottom,0px))}
+.info>div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px}
+.info small{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.info b{font-size:13.5px;font-weight:600}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:linear-gradient(180deg,transparent,var(--paper) 36%)}
+.bar .in{max-width:460px;margin:0 auto;display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:8px 8px 8px 16px;box-shadow:0 14px 30px -18px rgba(10,30,28,.3)}
+.bar .t{flex:1;min-width:0;font-size:12.5px;color:var(--muted);line-height:1.3}
+.bar .t b{display:block;color:var(--ink);font-size:14.5px;font-family:var(--display);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scrim{position:fixed;inset:0;z-index:30;background:rgba(8,24,22,.5);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center}
+.sheet{width:100%;max-width:480px;max-height:92%;overflow:auto;background:var(--card);border:1px solid var(--line);border-bottom:0;border-radius:26px 26px 0 0;padding:10px 20px calc(22px + env(safe-area-inset-bottom,0px))}
 @media (prefers-reduced-motion:no-preference){.sheet{animation:up .35s var(--ease)}@keyframes up{from{transform:translateY(40px);opacity:.3}}}
-.grab{width:42px;height:5px;border-radius:5px;background:var(--line);margin:4px auto 14px}
+.grab{width:40px;height:5px;border-radius:5px;background:var(--line);margin:4px auto 14px}
 .steps{display:flex;gap:6px;margin-bottom:16px}
 .steps span{flex:1;height:4px;border-radius:4px;background:var(--line)}
-.steps span.on{background:var(--sand)}
-.sheet h3{font-family:var(--display);font-size:22px;margin:0 0 4px;font-weight:600}
+.steps span.on{background:var(--teal)}
+.sheet h3{font-family:var(--display);font-size:26px;margin:0 0 4px;font-weight:600}
+.pick-svc{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px;border:1px solid var(--line);border-radius:14px;width:100%;text-align:left;margin-top:8px;background:var(--card)}
+.pick-svc.sel{border-color:var(--teal);background:var(--teal-soft)}
+.pick-svc .n{font-family:var(--display);font-size:18px;font-weight:600}
+.pick-svc .d{font-size:12px;color:var(--muted)}
+.pick-svc .p{font-family:var(--display);font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 label{display:block;font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--muted)}
-input,select{width:100%;border:1px solid var(--line);background:var(--glass);color:var(--ink);border-radius:13px;padding:13px 14px;font:inherit}
-input::placeholder{color:rgba(174,183,216,.6)}
-select{background:#12204A}
+input,select{width:100%;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:12px;padding:13px 14px;font:inherit}
 .dates{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.guests{display:flex;align-items:center;gap:14px;margin-top:6px}
-.guests button{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--glass);font-size:20px;font-weight:700}
-.guests b{font-size:20px;font-variant-numeric:tabular-nums;min-width:2ch;text-align:center}
-.recap{background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:14px;display:grid;gap:6px;font-size:14px;margin:14px 0}
+.guests{display:flex;align-items:center;gap:14px;margin-top:4px}
+.guests button{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-size:20px;font-weight:700}
+.guests b{font-size:20px;font-variant-numeric:tabular-nums;min-width:2ch;text-align:center;font-family:var(--display)}
+.recap{background:var(--paper);border:1px solid var(--line);border-radius:15px;padding:14px;display:grid;gap:7px;font-size:14px;margin:14px 0}
 .recap .row{display:flex;justify-content:space-between;gap:12px}
 .recap .row span:last-child{font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
-.recap .tot{border-top:1px dashed var(--line);padding-top:8px;font-size:16px}
-.recap .tot span:last-child{color:var(--sand);font-family:var(--display)}
+.recap .tot{border-top:1px dashed var(--line);padding-top:9px;font-size:16px}
+.recap .tot span:last-child{color:var(--teal);font-family:var(--display);font-size:20px}
 .ops{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.op{border:2px solid var(--line);border-radius:15px;padding:14px 10px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--glass)}
+.op{border:2px solid var(--line);border-radius:14px;padding:14px 10px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--card)}
 .op i{width:20px;height:20px;border-radius:5px;display:inline-block}
-.op[aria-pressed="true"]{border-color:var(--sand);background:rgba(233,180,112,.1)}
-.note{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+.op[aria-pressed="true"]{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 12%,transparent)}
 .nav{display:flex;gap:10px;margin-top:16px}.nav .btn{flex:1}
 .done{text-align:center;padding:8px 0 4px}
-.ring{width:82px;height:82px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,rgba(100,224,163,.25),transparent 70%)}
-.ring svg{width:54px;height:54px}.ring path{stroke:var(--ok);stroke-width:5;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60}
+.ring{width:80px;height:80px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:var(--ok-soft)}
+.ring svg{width:46px;height:46px}.ring path{stroke:var(--ok);stroke-width:5;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60}
 @media (prefers-reduced-motion:no-preference){.ring path{animation:draw .7s .1s ease-out both}@keyframes draw{from{stroke-dashoffset:60}}}
-
-.dash-top{border-radius:26px;padding:22px;background:linear-gradient(135deg,#2847B8,#12204A 62%);border:1px solid var(--line);position:relative;overflow:hidden}
-.dash-top::after{content:"";position:absolute;right:-40px;top:-40px;width:170px;height:170px;border-radius:50%;background:var(--sand);opacity:.16;filter:blur(8px)}
-.dash-top p{margin:0;color:var(--muted);font-size:13px}.dash-top h2{font-size:25px;margin:2px 0 16px}
-.kpi-ca{background:rgba(11,18,48,.45);border-radius:16px;padding:14px 16px;position:relative;z-index:1;display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
-.kpi-ca span{font-size:12.5px;color:var(--muted)}.kpi-ca b{font-family:var(--display);font-size:30px;color:var(--sand);font-variant-numeric:tabular-nums}
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;position:relative;z-index:1}
-.kpi{background:rgba(11,18,48,.45);border-radius:14px;padding:11px}
-.kpi b{display:block;font-family:var(--display);font-size:20px;font-variant-numeric:tabular-nums}.kpi em{font-size:11.5px;color:var(--muted);font-style:normal}
-.stay{display:grid;grid-template-columns:52px 1fr;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
-.stay:last-child{border-bottom:0}
-.stay.fresh{background:linear-gradient(90deg,rgba(233,180,112,.12),transparent);border-radius:14px;padding-left:10px;margin-left:-10px}
-.stay .dte{font-family:var(--display);font-weight:600;font-size:17px;font-variant-numeric:tabular-nums;line-height:1}
-.stay .dte small{display:block;font-family:var(--body);font-weight:500;font-size:11px;color:var(--muted);margin-top:2px}
-.stay .who{font-weight:600}.stay .what{font-size:12.5px;color:var(--muted)}
+.dash{border-radius:22px;padding:22px;background:linear-gradient(145deg,#0E7C7B,#073E3D);color:#fff;border:1px solid var(--line)}
+.dash p{margin:0;opacity:.8;font-size:13px}.dash h2{font-size:26px;margin:2px 0 16px;color:#fff}
+.kpi-ca{background:rgba(0,0,0,.22);border-radius:15px;padding:14px 16px;display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
+.kpi-ca span{font-size:12.5px;opacity:.85}.kpi-ca b{font-family:var(--body);font-weight:700;font-size:30px;letter-spacing:-.01em;color:var(--gold);font-variant-numeric:tabular-nums}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpi{background:rgba(0,0,0,.22);border-radius:13px;padding:11px}
+.kpi b{display:block;font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}.kpi em{font-size:11px;opacity:.8;font-style:normal}
+.rdv{display:grid;grid-template-columns:50px 1fr;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
+.rdv:last-child{border-bottom:0}
+.rdv.fresh{background:var(--teal-soft);border-radius:13px;padding-left:10px;margin-left:-10px}
+.rdv .t{font-family:var(--display);font-weight:600;font-size:20px;font-variant-numeric:tabular-nums;line-height:1}
+.rdv .t small{display:block;font-family:var(--body);font-weight:500;font-size:11px;color:var(--muted);text-transform:capitalize;margin-top:2px}
+.rdv .who{font-weight:600}.rdv .what{font-size:12.5px;color:var(--muted)}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;align-items:center}
-.chip{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px}
-.chip.paid{background:rgba(100,224,163,.15);color:var(--ok)}.chip.new{background:var(--sand);color:var(--sand-ink)}
-.mini{border:1px solid var(--line);border-radius:10px;padding:5px 10px;font-size:12.5px;font-weight:600;background:var(--glass)}
-.msg{margin-top:10px;background:rgba(11,18,48,.5);border:1px solid var(--line);border-radius:14px 14px 14px 4px;padding:12px;font-size:13.5px}.msg p{margin:0 0 8px}
-.share{display:flex;gap:10px;align-items:center;background:rgba(11,18,48,.5);border:1px solid var(--line);border-radius:14px;padding:12px}
-.share code{flex:1;min-width:0;font-size:14px;color:var(--sand);word-break:break-all}
-.ex{font-size:11px;color:var(--muted);font-weight:500}
-@media (prefers-reduced-motion:no-preference){.rdv-anim{transition:transform .2s}}
-body.paused *,body.paused *::before,body.paused *::after{animation-play-state:paused!important}
+.chip{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px}
+.chip.paid{background:var(--ok-soft);color:var(--ok)}.chip.new{background:var(--gold);color:#241206}
+.mini{border:1px solid var(--line);border-radius:10px;padding:5px 10px;font-size:12px;font-weight:600;background:var(--card)}
+.msg{margin-top:9px;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:11px;font-size:13px}.msg p{margin:0 0 8px}
+.share{display:flex;gap:10px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px}
+.share code{flex:1;min-width:0;font-size:14px;color:var(--teal);word-break:break-all}
+.ex{font-size:10.5px;color:var(--muted);font-weight:500}
 @media (pointer:coarse){.btn{min-height:44px}}
+body.paused *,body.paused *::before,body.paused *::after{animation-play-state:paused!important}
 </style>
 </head>
 <body>
 
-
-<div class="aura" aria-hidden="true"><i></i><i></i><i></i></div>
 
 <div class="wrap">
   <div class="switch" role="group" aria-label="Choisir la vue">
@@ -153,38 +149,45 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
   </div>
   <p class="hint" id="hint">Ce que voit un client quand il ouvre le lien de l'hôtel.</p>
 
-  <!-- VUE CLIENT -->
   <div id="client" style="display:flex;flex-direction:column;gap:16px">
     <header class="hero">
-      <canvas id="hero-art" aria-hidden="true"></canvas>
-      <div class="tag"><span class="pill live">Disponible ce week-end</span><span class="pill">Démo</span></div>
-      <p class="kicker">Au bord de la lagune, Cotonou</p>
+      <div class="ph" aria-hidden="true"></div>
+      <span class="hpill">Démo</span>
+      <span class="open"><i aria-hidden="true"></i>Chambres disponibles ce week-end</span>
       <h1>Résidence Lagune</h1>
-      <p class="where"><span><b>Les Cocotiers</b> · 10 min de l'aéroport</span><span><span class="stars">★★★★★</span> 4,7 (88 avis)</span></p>
+      <p class="sub"><span>Au bord de la lagune · Les Cocotiers</span><span><span class="stars">★★★★★</span> 4,7 (88 avis)</span></p>
       <div class="cta">
-        <button class="btn btn-main" id="go-book">Réserver une chambre</button>
-        <button class="btn btn-glass" id="go-wa">WhatsApp</button>
+        <button class="btn btn-gold" id="go-book">Réserver</button>
+        <button class="btn btn-soft" id="go-wa">WhatsApp</button>
       </div>
-      <div class="amen"><span>Wifi gratuit</span><span>Petit-déjeuner</span><span>Piscine</span><span>Climatisation</span><span>Parking</span></div>
     </header>
     <p class="note" id="wa-note" hidden style="margin:-6px 4px 0">Dans la vraie version, ce bouton ouvre WhatsApp avec le message « Bonjour Résidence Lagune, je voudrais réserver une chambre » déjà écrit.</p>
 
     <section class="card">
-      <h2>Nos chambres</h2>
-      <p class="sub">Touchez une chambre pour réserver. Acompte d'une nuit, déduit du total.</p>
+      <span class="eyebrow">Séjour</span><h2 class="t">Nos chambres</h2>
+      <p class="lead">Touchez une chambre pour réserver. Acompte d'une nuit, déduit du total.</p>
       <div id="rooms"></div>
     </section>
 
+    <section class="card">
+      <span class="eyebrow">La résidence</span><h2 class="t">Nos espaces</h2>
+      <p class="lead">L'hôtel met ici ses vraies photos. Voici les emplacements.</p>
+      <div class="gal">
+        <div class="tile" style="background:linear-gradient(140deg,#1AA09A,#06302F)"><span class="tag">Votre photo</span><b>Vue lagune</b></div>
+        <div class="tile" style="background:linear-gradient(140deg,#4FB0D1,#123B4A)"><span class="tag">Votre photo</span><b>Piscine</b></div>
+        <div class="tile" style="background:linear-gradient(140deg,#C2954A,#6E4E18)"><span class="tag">Votre photo</span><b>Chambre</b></div>
+      </div>
+    </section>
+
     <section class="info">
-      <div><small>Arrivée</small><b>à partir de 14h</b></div>
-      <div><small>Départ</small><b>avant 12h</b></div>
-      <div><small>Paiement</small><b>MoMo, Moov, espèces</b></div>
+      <div><small>Arrivée</small><b>à partir<br>de 14h</b></div>
+      <div><small>Départ</small><b>avant<br>12h</b></div>
+      <div><small>Paiement</small><b>MoMo, Moov,<br>espèces</b></div>
     </section>
   </div>
 
-  <!-- VUE HÔTEL -->
   <div id="hotel" hidden style="display:flex;flex-direction:column;gap:16px">
-    <div class="dash-top">
+    <div class="dash">
       <p>Bonjour 👋</p><h2>Résidence Lagune</h2>
       <div class="kpi-ca"><span>Chiffre d'affaires de la semaine</span><b><span id="k-ca">0</span> F</b></div>
       <div class="kpis">
@@ -194,18 +197,17 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
       </div>
     </div>
     <section class="card">
-      <h2>Arrivées à venir</h2>
-      <p class="sub">Les 3 premières réservations sont des exemples.</p>
+      <span class="eyebrow">Agenda</span><h2 class="t">Arrivées à venir</h2>
+      <p class="lead">Les 3 premières sont des exemples.</p>
       <div id="agenda"></div>
     </section>
     <section class="card">
-      <h2>Votre lien</h2>
-      <p class="sub">À mettre dans la bio Instagram, le statut WhatsApp et la fiche Google.</p>
+      <span class="eyebrow">Partage</span><h2 class="t">Votre lien</h2>
+      <p class="lead">Pour la bio Instagram, le statut WhatsApp et la fiche Google.</p>
       <div class="share"><code>berodak.github.io/demo-hotel</code><button class="mini" id="copy-link">Copier</button></div>
     </section>
     <section class="card">
-      <h2>Demander un avis Google</h2>
-      <p class="sub">À envoyer après chaque séjour.</p>
+      <span class="eyebrow">Avis</span><h2 class="t">Demander un avis Google</h2>
       <div class="msg"><p id="rev">Merci d'avoir séjourné à la Résidence Lagune ! Votre avis nous aide beaucoup : [lien vers votre fiche Google]</p><button class="mini" data-copy="rev">Copier le message</button></div>
     </section>
   </div>
@@ -213,23 +215,23 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
 
 <div class="bar" id="bar"><div class="in">
   <div class="t" id="bar-t">Dès<b id="bar-next">25 000 F la nuit</b></div>
-  <button class="btn btn-main" id="bar-book" style="padding:13px 18px">Réserver</button>
+  <button class="btn btn-teal" id="bar-book" style="padding:13px 18px">Réserver</button>
 </div></div>
 
 <div class="scrim" id="scrim" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Réservation"></div></div>
 
 <script>
 const ROOMS=[
-  {id:"std",n:"Chambre Standard",d:"2 personnes · 1 lit double",p:25000,c:"#4FD1C5",cap:2},
-  {id:"sup",n:"Chambre Supérieure",d:"2 personnes · vue lagune",p:38000,c:"#E9B470",cap:2},
-  {id:"fam",n:"Suite Familiale",d:"4 personnes · salon privé",p:60000,c:"#FF8A6B",cap:4}
+  {id:"std",n:"Chambre Standard",d:"2 personnes · 1 lit double",p:25000,cap:2},
+  {id:"sup",n:"Chambre Supérieure",d:"2 personnes · vue lagune",p:38000,cap:2},
+  {id:"fam",n:"Suite Familiale",d:"4 personnes · salon privé",p:60000,cap:4}
 ];
 const REDUCED=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const fmt=n=>n.toLocaleString("fr-FR").replace(/ | /g," ");
 const $=id=>document.getElementById(id);
 const DAY=864e5, today=new Date(); today.setHours(0,0,0,0);
 const iso=d=>d.toISOString().slice(0,10);
-const parse=s=>{const d=new Date(s+"T00:00:00");return d;};
+const parse=s=>new Date(s+"T00:00:00");
 const nice=d=>d.toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"});
 let bookings=[
   {who:"Koffi A.",room:"sup",in:iso(new Date(today.getTime())),nights:2,paid:true,ex:true},
@@ -239,39 +241,23 @@ let bookings=[
 const st={step:0,room:null,cin:iso(new Date(today.getTime()+DAY)),cout:iso(new Date(today.getTime()+2*DAY)),guests:2,name:"",tel:"",op:null};
 const nightsOf=()=>Math.max(0,Math.round((parse(st.cout)-parse(st.cin))/DAY));
 const roomObj=()=>ROOMS.find(r=>r.id===st.room);
-
-function pattern(cv,a,b,seed){
-  const r=cv.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
-  cv.width=Math.max(1,r.width*dpr);cv.height=Math.max(1,r.height*dpr);
-  const x=cv.getContext("2d");x.scale(dpr,dpr);const W=r.width,H=r.height;
-  const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,b);g.addColorStop(1,"#0B1230");x.fillStyle=g;x.fillRect(0,0,W,H);
-  let s=seed;const rnd=()=>(s=(s*9301+49297)%233280)/233280;
-  // vagues horizontales façon lagune
-  for(let k=0;k<7;k++){x.globalAlpha=.12+rnd()*.28;x.strokeStyle=a;x.lineWidth=1.5+rnd()*1.5;x.beginPath();
-    const y0=rnd()*H;for(let px=0;px<=W;px+=6){const yy=y0+Math.sin(px/26+k+rnd()*.3)*7;px===0?x.moveTo(px,yy):x.lineTo(px,yy);}x.stroke();}
-  for(let k=0;k<5;k++){x.globalAlpha=.2+rnd()*.3;x.fillStyle=a;x.beginPath();x.arc(rnd()*W,rnd()*H,1+rnd()*2.4,0,7);x.fill();}
-  const v=x.createRadialGradient(W*.7,H*.3,8,W*.7,H*.3,W);v.addColorStop(0,"rgba(255,255,255,.16)");v.addColorStop(1,"rgba(0,0,0,0)");x.globalAlpha=1;x.fillStyle=v;x.fillRect(0,0,W,H);
-}
-function drawArt(){pattern($("hero-art"),"#4FD1C5","#2847B8",9);document.querySelectorAll(".room .pic canvas").forEach((c,i)=>pattern(c,ROOMS[i].c,"#12204A",i*41+5));}
+const minOut=()=>iso(new Date(parse(st.cin).getTime()+DAY));
 
 function renderRooms(){
-  $("rooms").innerHTML=ROOMS.map(r=>`<button class="room ${st.room===r.id?"sel":""}" data-room="${r.id}">
-    <span class="pic"><canvas></canvas></span>
-    <span><span class="n">${r.n}</span><div class="d">${r.d}</div><div class="price">${fmt(r.p)} F <span>la nuit</span></div></span></button>`).join("");
-  requestAnimationFrame(()=>document.querySelectorAll(".room .pic canvas").forEach((c,i)=>pattern(c,ROOMS[i].c,"#12204A",i*41+5)));
+  $("rooms").innerHTML=ROOMS.map(r=>`<button class="room" data-room="${r.id}">
+    <span class="l"><span class="n">${r.n}</span><div class="d">${r.d}</div></span>
+    <span class="dots"></span><span class="r"><span class="p">${fmt(r.p)} F <span>/ nuit</span></span><span class="go">Réserver</span></span></button>`).join("");
 }
 function updateBar(){const r=roomObj();$("bar-t").innerHTML=r?`${r.n}<b>${fmt(r.p)} F la nuit</b>`:`Dès<b>${fmt(Math.min(...ROOMS.map(r=>r.p)))} F la nuit</b>`;}
 const stepsBar=()=>`<div class="grab"></div><div class="steps">${[0,1,2,3].map(i=>`<span class="${i<=st.step?"on":""}"></span>`).join("")}</div>`;
 function openSheet(){$("scrim").hidden=false;renderSheet();}
 function closeSheet(){$("scrim").hidden=true;}
-function minOut(){const ci=parse(st.cin);return iso(new Date(ci.getTime()+DAY));}
-
 function renderSheet(){
   const sh=$("sheet"),r=roomObj();
   if(st.step===0){
-    sh.innerHTML=stepsBar()+`<h3>Quelle chambre ?</h3><p class="note" style="margin:0 0 10px">Choisissez votre confort.</p>
-    ${ROOMS.map(x=>`<button class="room ${st.room===x.id?"sel":""}" data-pick="${x.id}"><span class="pic" style="background:${x.c}"></span><span><span class="n">${x.n}</span><div class="d">${x.d}</div><div class="price">${fmt(x.p)} F <span>la nuit</span></div></span></button>`).join("")}
-    <div class="nav"><button class="btn btn-glass" data-act="close">Fermer</button><button class="btn btn-main" data-act="next" ${r?"":"disabled"}>Continuer</button></div>`;
+    sh.innerHTML=stepsBar()+`<h3>Quelle chambre ?</h3>
+    ${ROOMS.map(x=>`<button class="pick-svc ${st.room===x.id?"sel":""}" data-pick="${x.id}"><span><span class="n">${x.n}</span><div class="d">${x.d}</div></span><span class="p">${fmt(x.p)} F</span></button>`).join("")}
+    <div class="nav"><button class="btn btn-ghost" data-act="close">Fermer</button><button class="btn btn-teal" data-act="next" ${r?"":"disabled"}>Continuer</button></div>`;
   }else if(st.step===1){
     if(parse(st.cout)<=parse(st.cin))st.cout=minOut();
     const nb=nightsOf();
@@ -280,14 +266,14 @@ function renderSheet(){
     <div><label for="cout">Départ</label><input type="date" id="cout" value="${st.cout}" min="${minOut()}"></div></div>
     <label>Voyageurs</label><div class="guests"><button data-g="-1" aria-label="moins">–</button><b id="gval">${st.guests}</b><button data-g="1" aria-label="plus">+</button><span class="note" style="margin:0 0 0 6px">max ${r.cap}</span></div>
     <div class="recap"><div class="row"><span>${nb} nuit${nb>1?"s":""} × ${fmt(r.p)} F</span><span>${fmt(nb*r.p)} F</span></div></div>
-    <div class="nav"><button class="btn btn-glass" data-act="back">Retour</button><button class="btn btn-main" data-act="next" ${nb>0?"":"disabled"}>Continuer</button></div>`;
+    <div class="nav"><button class="btn btn-ghost" data-act="back">Retour</button><button class="btn btn-teal" data-act="next" ${nb>0?"":"disabled"}>Continuer</button></div>`;
     $("cin").onchange=e=>{st.cin=e.target.value;if(parse(st.cout)<=parse(st.cin))st.cout=minOut();renderSheet();};
     $("cout").onchange=e=>{st.cout=e.target.value;renderSheet();};
   }else if(st.step===2){
-    sh.innerHTML=stepsBar()+`<h3>Vos coordonnées</h3><p class="note" style="margin:0">Pour la confirmation et le rappel.</p>
+    sh.innerHTML=stepsBar()+`<h3>Vos coordonnées</h3>
     <label for="f-name">Prénom et nom</label><input id="f-name" value="${st.name}" placeholder="Ex. Awa Dossou" autocomplete="name">
     <label for="f-tel">Numéro WhatsApp</label><input id="f-tel" value="${st.tel}" placeholder="Ex. 01 97 00 00 00" inputmode="tel" autocomplete="tel">
-    <div class="nav"><button class="btn btn-glass" data-act="back">Retour</button><button class="btn btn-main" data-act="next" id="to-pay" ${st.name&&st.tel?"":"disabled"}>Continuer</button></div>`;
+    <div class="nav"><button class="btn btn-ghost" data-act="back">Retour</button><button class="btn btn-teal" data-act="next" id="to-pay" ${st.name&&st.tel?"":"disabled"}>Continuer</button></div>`;
     const chk=()=>{st.name=$("f-name").value.trim();st.tel=$("f-tel").value.trim();$("to-pay").disabled=!(st.name&&st.tel);};
     $("f-name").oninput=chk;$("f-tel").oninput=chk;
   }else if(st.step===3){
@@ -297,28 +283,24 @@ function renderSheet(){
     <div class="row"><span>${nice(parse(st.cin))} → ${nice(parse(st.cout))}</span><span>${nb} nuit${nb>1?"s":""}</span></div>
     <div class="row"><span>Total du séjour</span><span>${fmt(total)} F</span></div>
     <div class="row"><span>Reste à payer sur place</span><span>${fmt(total-dep)} F</span></div>
-    <div class="row tot"><span>Acompte maintenant (1 nuit)</span><span>${fmt(dep)} F</span></div></div>
+    <div class="row tot"><span>Acompte maintenant</span><span>${fmt(dep)} F</span></div></div>
     <div class="ops"><button class="op" data-op="MTN MoMo" aria-pressed="${st.op==="MTN MoMo"}"><i style="background:#FFCC00"></i>MTN MoMo</button><button class="op" data-op="Moov Money" aria-pressed="${st.op==="Moov Money"}"><i style="background:#0066B3"></i>Moov Money</button></div>
-    <button class="btn btn-main" data-act="pay" style="width:100%" ${st.op?"":"disabled"}>Payer ${fmt(dep)} FCFA</button>
-    <p class="note">Démo : aucun argent ne bouge. En vrai, le client valide le paiement sur son téléphone.</p>
-    <div class="nav"><button class="btn btn-glass" data-act="back">Retour</button></div>`;
+    <button class="btn btn-gold" data-act="pay" style="width:100%" ${st.op?"":"disabled"}>Payer ${fmt(dep)} FCFA</button>
+    <p class="note">Démo : aucun argent ne bouge.</p>
+    <div class="nav"><button class="btn btn-ghost" data-act="back">Retour</button></div>`;
   }else{
     const nb=nightsOf();
     sh.innerHTML=`<div class="grab"></div><div class="done"><div class="ring"><svg viewBox="0 0 56 56"><path d="M15 29l9 9 18-20"/></svg></div>
     <h3>C'est réservé, ${st.name.split(" ")[0]} !</h3>
     <p class="note" style="margin:4px 0 16px">${r.n}<br><b style="color:var(--ink)">${nice(parse(st.cin))} → ${nice(parse(st.cout))} · ${nb} nuit${nb>1?"s":""}</b><br>Acompte de ${fmt(r.p)} F payé par ${st.op}.</p>
-    <button class="btn btn-main" data-act="see-hotel" style="width:100%">Voir ce que reçoit l'hôtel →</button></div>`;
+    <button class="btn btn-teal" data-act="see-hotel" style="width:100%">Voir ce que reçoit l'hôtel →</button></div>`;
   }
 }
-function occupancy(){
-  // taux sur les 7 prochaines nuits, 3 chambres types -> on compte des nuits-chambres occupées / (7*3)
-  let busy=0;for(const b of bookings){for(let k=0;k<b.nights;k++){const d=(parse(b.in).getTime()-today.getTime())/DAY+k;if(d>=0&&d<7)busy++;}}
-  return Math.min(100,Math.round(busy/(7*ROOMS.length)*100));
-}
+function occupancy(){let busy=0;for(const b of bookings){for(let k=0;k<b.nights;k++){const d=(parse(b.in).getTime()-today.getTime())/DAY+k;if(d>=0&&d<7)busy++;}}return Math.min(100,Math.round(busy/(7*ROOMS.length)*100));}
 function renderHotel(){
   const sorted=[...bookings].sort((a,b)=>parse(a.in)-parse(b.in));
-  $("agenda").innerHTML=sorted.map((b,i)=>{const r=ROOMS.find(x=>x.id===b.room);const din=parse(b.in);
-    return `<div class="stay ${b.isNew?"fresh":""}"><div class="dte">${din.getDate()}<small>${din.toLocaleDateString("fr-FR",{month:"short"})}</small></div><div>
+  $("agenda").innerHTML=sorted.map(b=>{const r=ROOMS.find(x=>x.id===b.room);const din=parse(b.in);
+    return `<div class="rdv ${b.isNew?"fresh":""}"><div class="t">${din.getDate()}<small>${din.toLocaleDateString("fr-FR",{month:"short"})}</small></div><div>
     <div class="who">${b.who}${b.ex?' <span class="ex">(exemple)</span>':""}</div><div class="what">${r.n} · ${b.nights} nuit${b.nights>1?"s":""} · ${fmt(r.p*b.nights)} F</div>
     <div class="chips">${b.isNew?'<span class="chip new">Nouveau</span>':""}<span class="chip paid">${b.paid?"Acompte payé":"Sans acompte"}</span></div></div></div>`;}).join("");
   const ca=bookings.reduce((t,b)=>t+ROOMS.find(x=>x.id===b.room).p*b.nights,0);
@@ -329,7 +311,7 @@ function countUp(el,to){if(REDUCED){el.textContent=fmt(to);return;}const t0=perf
 function view(v){const c=v==="client";$("client").hidden=!c;$("hotel").hidden=c;$("bar").hidden=!c;
   $("v-client").setAttribute("aria-pressed",c);$("v-hotel").setAttribute("aria-pressed",!c);
   $("hint").textContent=c?"Ce que voit un client quand il ouvre le lien de l'hôtel.":"Ce que voit le gérant sur son téléphone.";
-  if(c){requestAnimationFrame(drawArt);updateBar();}else renderHotel();
+  if(c)updateBar();else renderHotel();
   window.scrollTo({top:0,behavior:REDUCED?"auto":"smooth"});}
 async function copy(text,btn){try{await navigator.clipboard.writeText(text);btn.textContent="Copié ✓";}catch(e){btn.textContent="Sélectionnez le texte";}}
 
@@ -340,7 +322,7 @@ document.addEventListener("click",e=>{
   if(t.id==="v-hotel")view("hotel");
   if(t.id==="go-book"||t.id==="bar-book"){st.step=st.room?1:0;openSheet();}
   if(t.id==="go-wa")$("wa-note").hidden=!$("wa-note").hidden;
-  if(t.dataset.room){st.room=t.dataset.room;st.step=1;renderRooms();updateBar();openSheet();}
+  if(t.dataset.room){st.room=t.dataset.room;st.step=1;updateBar();openSheet();}
   if(t.dataset.pick){st.room=t.dataset.pick;const r=roomObj();if(st.guests>r.cap)st.guests=r.cap;renderSheet();updateBar();}
   if(t.dataset.g){const r=roomObj();st.guests=Math.max(1,Math.min(r?r.cap:4,st.guests+ +t.dataset.g));$("gval").textContent=st.guests;}
   if(t.dataset.op){st.op=t.dataset.op;renderSheet();}
@@ -348,13 +330,13 @@ document.addEventListener("click",e=>{
   if(a==="next"){st.step++;renderSheet();}
   if(a==="back"){st.step--;renderSheet();}
   if(a==="pay"){bookings.forEach(b=>b.isNew=false);bookings.push({who:st.name,room:st.room,in:st.cin,nights:nightsOf(),paid:true,isNew:true});st.step=4;renderSheet();}
-  if(a==="see-hotel"){closeSheet();Object.assign(st,{step:0,room:null,op:null});renderRooms();view("hotel");}
+  if(a==="see-hotel"){closeSheet();Object.assign(st,{step:0,room:null,op:null});view("hotel");}
   if(t.dataset.copy)copy($(t.dataset.copy).textContent.trim(),t);
   if(t.id==="copy-link")copy("berodak.github.io/demo-hotel",t);
 });
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("scrim").hidden)closeSheet();});
 document.addEventListener("visibilitychange",()=>document.body.classList.toggle("paused",document.hidden));
-renderRooms();updateBar();requestAnimationFrame(drawArt);addEventListener("resize",()=>{if(!$("client").hidden)drawArt();});
+renderRooms();updateBar();
 </script>
 
 </body>
