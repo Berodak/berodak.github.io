@@ -1,10 +1,3 @@
-<!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Demo Residence Lagune : reservation en ligne pour hotel a Cotonou.">
-<style>:root{color-scheme:light dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Résidence Lagune</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -160,11 +153,57 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
 .lock{position:absolute;inset:0;background:color-mix(in srgb,var(--card) 80%,transparent);backdrop-filter:blur(5px);border-radius:22px;display:grid;place-items:center;text-align:center;padding:24px}
 .lock b{font-family:var(--display);font-size:24px}
 .lock p{color:var(--muted);font-size:13.5px;margin:6px auto 14px;max-width:32ch}
+
+/* ============ COUCHE FX : verre · gooey · défilement · son ============ */
+[hidden]{display:none!important}
+:root{--fx1:#0E7C7B;--fx2:#C2954A}
+.sbar{position:fixed;top:env(safe-area-inset-top,0);left:0;height:3px;width:0%;z-index:60;background:linear-gradient(90deg,var(--fx1),var(--fx2));box-shadow:0 0 12px -1px var(--fx1);pointer-events:none;border-radius:0 3px 3px 0}
+/* lumière liquide vivante dans le hero */
+.hero .blobs{position:absolute;inset:0;z-index:-1;filter:url(#berodak-goo);mix-blend-mode:screen;opacity:.5;pointer-events:none}
+.hero .blobs span{position:absolute;border-radius:50%;will-change:transform}
+.hero .blobs .b1{width:190px;height:190px;background:var(--fx1);top:-34px;left:-24px}
+.hero .blobs .b2{width:150px;height:150px;background:var(--fx2);top:38%;right:-30px}
+.hero .blobs .b3{width:140px;height:140px;background:var(--fx2);bottom:-26px;left:28%;opacity:.7}
+@media (prefers-reduced-motion:no-preference){
+  .hero .blobs .b1{animation:hb1 16s ease-in-out infinite}
+  .hero .blobs .b2{animation:hb2 20s ease-in-out infinite}
+  .hero .blobs .b3{animation:hb3 18s ease-in-out infinite}
+  @keyframes hb1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(42px,30px) scale(1.16)}}
+  @keyframes hb2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-34px,-26px) scale(.88)}}
+  @keyframes hb3{0%,100%{transform:translate(0,0)}50%{transform:translate(22px,-30px)}}
+}
+/* verre iPhone sur la barre flottante */
+.bar .in{backdrop-filter:blur(16px) saturate(165%);-webkit-backdrop-filter:blur(16px) saturate(165%);background:color-mix(in srgb,var(--card) 76%,transparent)}
+/* révélation au défilement */
+.rv{opacity:1;transform:none}
+@media (prefers-reduced-motion:no-preference){
+  .rv{opacity:.001;transform:translateY(22px) scale(.99);transition:opacity .6s var(--ease),transform .6s var(--ease);transition-delay:var(--d,0ms)}
+  .rv.shown{opacity:1;transform:none}
+}
+/* onde au clic */
+.btn{position:relative;overflow:hidden}
+.ripple{position:absolute;border-radius:50%;background:currentColor;opacity:.2;transform:scale(0);animation:rip .6s ease-out forwards;pointer-events:none}
+@keyframes rip{to{transform:scale(1);opacity:0}}
+/* bouton son flottant (verre) */
+.sfx-toggle{position:fixed;z-index:61;left:max(14px,env(safe-area-inset-left,0px));bottom:max(90px,calc(env(safe-area-inset-bottom,0px) + 84px));width:48px;height:48px;border-radius:50%;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);background:color-mix(in srgb,var(--card) 66%,transparent);backdrop-filter:blur(16px) saturate(175%);-webkit-backdrop-filter:blur(16px) saturate(175%);box-shadow:0 12px 30px -14px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.4);display:grid;place-items:center;cursor:pointer;color:var(--ink);transition:transform .2s var(--ease)}
+.sfx-toggle:hover{transform:translateY(-2px) scale(1.05)}.sfx-toggle:active{transform:scale(.94)}
+.sfx-toggle svg{width:20px;height:20px;fill:currentColor}
+.sfx-toggle .eq{display:none;gap:3px;align-items:flex-end;height:16px}
+.sfx-toggle .eq i{width:3px;height:5px;background:var(--fx1);border-radius:2px;animation:eq 900ms ease-in-out infinite}
+.sfx-toggle .eq i:nth-child(2){animation-delay:150ms}.sfx-toggle .eq i:nth-child(3){animation-delay:320ms}
+@keyframes eq{0%,100%{height:4px}50%{height:15px}}
+.sfx-toggle.on .eq{display:flex}.sfx-toggle.on svg{display:none}
+.sfx-toggle.hint::before{content:"";position:absolute;inset:-1px;border-radius:50%;animation:ring 2.4s ease-out infinite}
+@keyframes ring{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--fx1) 48%,transparent)}70%,100%{box-shadow:0 0 0 13px transparent}}
+@media (prefers-reduced-motion:reduce){.sfx-toggle.hint::before,.sfx-toggle .eq i{animation:none}}
 </style>
-</head>
-<body>
 
-
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="berodak-goo"><feGaussianBlur in="SourceGraphic" stdDeviation="11" result="b"/><feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -9" result="g"/><feBlend in="SourceGraphic" in2="g"/></filter></defs></svg>
+<div class="sbar" id="sbar" aria-hidden="true"></div>
+<button class="sfx-toggle hint" id="sfx" aria-pressed="false" aria-label="Activer la musique d'ambiance et les sons">
+  <svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
+  <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+</button>
 <div class="wrap">
   <div class="switch" role="group" aria-label="Choisir la vue">
     <button id="v-client" aria-pressed="true">Vue client</button>
@@ -175,6 +214,7 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
   <div id="client" style="display:flex;flex-direction:column;gap:16px">
     <header class="hero">
       <div class="ph" aria-hidden="true"></div>
+      <div class="blobs" aria-hidden="true"><span class="b1"></span><span class="b2"></span><span class="b3"></span></div>
       <span class="hpill">Démo</span>
       <span class="open"><i aria-hidden="true"></i>Chambres disponibles ce week-end</span>
       <h1>Résidence Lagune</h1>
@@ -390,7 +430,51 @@ document.addEventListener("click",e=>{
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("scrim").hidden)closeSheet();});
 document.addEventListener("visibilitychange",()=>document.body.classList.toggle("paused",document.hidden));
 renderRooms();updateBar();
-</script>
 
-</body>
-</html>
+/* ============ FX : défilement · révélation · son (sans copyright) ============ */
+(function(){
+  var R=matchMedia("(prefers-reduced-motion: reduce)").matches, D=document, g=function(id){return D.getElementById(id);};
+  // révélation au défilement (vue cliente)
+  var sbar=g("sbar"), heroBlobs=D.querySelector(".hero .blobs");
+  var targets=[].slice.call(D.querySelectorAll("#client .hero, #client .card, #client .info"));
+  targets.forEach(function(t,i){t.classList.add("rv");t.style.setProperty("--d",(i*70)+"ms");});
+  if(!R && "IntersectionObserver" in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("shown");io.unobserve(e.target);}});},{threshold:.1,rootMargin:"0px 0px -6% 0px"});
+    targets.forEach(function(t){io.observe(t);});
+    setTimeout(function(){targets.forEach(function(t){t.classList.add("shown");});},1600);
+  }else targets.forEach(function(t){t.classList.add("shown");});
+  // barre de progression + parallaxe douce du hero
+  var tick=false;
+  function onScr(){var h=D.documentElement,max=h.scrollHeight-h.clientHeight,p=max>0?scrollY/max:0;if(sbar)sbar.style.width=(p*100)+"%";if(heroBlobs&&!R)heroBlobs.style.transform="translateY("+(scrollY*0.18)+"px)";tick=false;}
+  addEventListener("scroll",function(){if(!tick){tick=true;requestAnimationFrame(onScr);}},{passive:true});onScr();
+
+  /* ---- moteur audio : jazz génératif + clic ---- */
+  var AC,master,voiceBus,busDelay,on=false,loopT=null,nextTime=0,barIx=0,noiseBuf=null;
+  var mtof=function(m){return 440*Math.pow(2,(m-69)/12);}, BAR=2.4;
+  var prog=[{bass:41,up:[57,60,64,67]},{bass:38,up:[53,57,60,64]},{bass:43,up:[58,62,65,69]},{bass:36,up:[52,55,58,62]}];
+  function initAudio(){if(AC)return;var Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;AC=new Ctx();
+    master=AC.createGain();master.gain.value=0;master.connect(AC.destination);
+    voiceBus=AC.createBiquadFilter();voiceBus.type="lowpass";voiceBus.frequency.value=2100;voiceBus.Q.value=.3;voiceBus.connect(master);
+    busDelay=AC.createDelay();busDelay.delayTime.value=0.34;var fb=AC.createGain();fb.gain.value=0.26;var wet=AC.createGain();wet.gain.value=0.22;
+    voiceBus.connect(busDelay);busDelay.connect(fb);fb.connect(busDelay);busDelay.connect(wet);wet.connect(master);
+    noiseBuf=AC.createBuffer(1,Math.floor(AC.sampleRate*0.3),AC.sampleRate);var d=noiseBuf.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=Math.random()*2-1;}
+  function voice(freq,t,dur,vel,type){var o=AC.createOscillator();o.type=type||"sine";o.frequency.value=freq;var gn=AC.createGain();gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(vel,t+0.05);gn.gain.exponentialRampToValueAtTime(0.0001,t+dur);o.connect(gn);gn.connect(voiceBus);o.start(t);o.stop(t+dur+0.1);}
+  function brush(t,vel){var s=AC.createBufferSource();s.buffer=noiseBuf;var bp=AC.createBiquadFilter();bp.type="bandpass";bp.frequency.value=5200;bp.Q.value=.8;var gn=AC.createGain();gn.gain.setValueAtTime(0,t);gn.gain.linearRampToValueAtTime(vel,t+0.02);gn.gain.exponentialRampToValueAtTime(0.0001,t+0.22);s.connect(bp);bp.connect(gn);gn.connect(master);s.start(t);s.stop(t+0.3);}
+  function scheduleBar(ch,t){voice(mtof(ch.bass),t,BAR*0.92,.16,"triangle");voice(mtof(ch.bass+12),t,BAR*0.9,.045,"sine");
+    [0.0,0.33,0.58,0.83].forEach(function(f,i){var tt=t+f*BAR;ch.up.forEach(function(n){voice(mtof(n)*(1+(Math.random()-.5)*0.004),tt,0.55,.05,"sine");});if(i%2)brush(tt,.012);});
+    if(barIx%2===0){var mel=ch.up[1+Math.floor(Math.random()*2)]+12;voice(mtof(mel),t+0.58*BAR,0.9,.06,"sine");}}
+  function scheduler(){while(nextTime<AC.currentTime+0.4){scheduleBar(prog[barIx%prog.length],nextTime);nextTime+=BAR;barIx++;}}
+  function blip(){if(!on||!AC)return;var t=AC.currentTime;var o=AC.createOscillator();o.type="sine";o.frequency.setValueAtTime(900,t);o.frequency.exponentialRampToValueAtTime(430,t+0.06);var gn=AC.createGain();gn.gain.setValueAtTime(0.0001,t);gn.gain.linearRampToValueAtTime(.07,t+0.005);gn.gain.exponentialRampToValueAtTime(0.0001,t+0.1);o.connect(gn);gn.connect(master);o.start(t);o.stop(t+0.12);}
+  var sfx=g("sfx");
+  function soundOn(){initAudio();if(!AC)return;if(AC.state==="suspended")AC.resume();on=true;master.gain.cancelScheduledValues(AC.currentTime);master.gain.setValueAtTime(master.gain.value,AC.currentTime);master.gain.linearRampToValueAtTime(0.12,AC.currentTime+1.2);nextTime=AC.currentTime+0.15;barIx=0;if(!loopT)loopT=setInterval(scheduler,70);sfx.classList.add("on");sfx.classList.remove("hint");sfx.setAttribute("aria-pressed","true");try{localStorage.setItem("berodakSound","1");}catch(e){}}
+  function soundOff(){on=false;if(master)master.gain.linearRampToValueAtTime(0,AC.currentTime+0.4);if(loopT){clearInterval(loopT);loopT=null;}sfx.classList.remove("on");sfx.setAttribute("aria-pressed","false");try{localStorage.setItem("berodakSound","0");}catch(e){}}
+  if(sfx)sfx.addEventListener("click",function(){on?soundOff():soundOn();});
+  // onde + son au clic (délégation, survit aux re-rendus)
+  function ripple(e,el){var r=el.getBoundingClientRect(),d=Math.max(r.width,r.height),s=D.createElement("span");s.className="ripple";s.style.width=s.style.height=d+"px";s.style.left=((e.clientX||r.left+r.width/2)-r.left-d/2)+"px";s.style.top=((e.clientY||r.top+r.height/2)-r.top-d/2)+"px";el.appendChild(s);setTimeout(function(){s.remove();},620);}
+  D.addEventListener("pointerdown",function(e){var b=e.target.closest(".btn,.mini,.slot,.day,.op,.pick-svc,.plan-opt,.svc,.switch button,.sfx-toggle");if(!b)return;if(b.classList.contains("btn"))ripple(e,b);blip();},true);
+  // préférence son mémorisée (autoplay nécessite un geste)
+  var pref=null;try{pref=localStorage.getItem("berodakSound");}catch(e){}
+  if(pref==="0"&&sfx)sfx.classList.remove("hint");
+  if(pref==="1"){var go=function(){soundOn();removeEventListener("pointerdown",go);removeEventListener("keydown",go);};addEventListener("pointerdown",go);addEventListener("keydown",go);}
+})();
+</script>

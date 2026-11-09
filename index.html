@@ -184,7 +184,72 @@ footer a:hover{color:var(--ink)}
 .svc{transition:transform .25s var(--ease),box-shadow .25s var(--ease)}
 .svc:hover{transform:translateY(-3px);box-shadow:0 14px 34px -24px rgba(20,18,10,.3)}
 .offer.feat{box-shadow:0 6px 16px -6px color-mix(in srgb,var(--blue) 30%,transparent)}
+
+/* ============ COUCHE FX : verre · gooey · défilement · son ============ */
+:root{--fx1:var(--blue);--fx2:var(--clay)}
+
+/* barre de progression de défilement (verre lumineux) */
+.sbar{position:fixed;top:env(safe-area-inset-top,0);left:0;height:3px;width:0%;z-index:40;background:linear-gradient(90deg,var(--fx1),var(--fx2));box-shadow:0 0 14px -1px var(--fx1);pointer-events:none;border-radius:0 3px 3px 0}
+
+/* nav : verre iPhone renforcé */
+nav{backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%)}
+
+/* pastille Disponible : verre dépoli au-dessus des blobs */
+.avail{background:color-mix(in srgb,var(--card) 68%,transparent);backdrop-filter:blur(12px) saturate(160%);-webkit-backdrop-filter:blur(12px) saturate(160%)}
+
+/* blobs gluants (filtre goo) en fond du hero */
+.blobs{position:absolute;inset:-12% -6% -12% 30%;z-index:0;filter:url(#berodak-goo);pointer-events:none;opacity:.42}
+.blob{position:absolute;border-radius:50%;will-change:transform}
+.blob.b1{width:270px;height:270px;background:var(--fx1);top:0%;right:10%}
+.blob.b2{width:210px;height:210px;background:var(--fx2);top:34%;right:2%}
+.blob.b3{width:180px;height:180px;background:var(--fx1);top:16%;right:30%}
+@media (prefers-reduced-motion:no-preference){
+  .blob.b1{animation:flA 15s ease-in-out infinite}
+  .blob.b2{animation:flB 19s ease-in-out infinite}
+  .blob.b3{animation:flC 17s ease-in-out infinite}
+  @keyframes flA{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-26px,42px) scale(1.12)}}
+  @keyframes flB{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(28px,-28px) scale(.9)}}
+  @keyframes flC{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-22px,-30px) scale(1.06)}}
+}
+@media (max-width:860px){.blobs{inset:-14% -10% auto -10%;height:60%;opacity:.3}}
+
+/* reflet verre sur les téléphones de la vitrine */
+.showcase .phone::after{content:"";position:absolute;inset:0;border-radius:26px;background:linear-gradient(135deg,rgba(255,255,255,.4),rgba(255,255,255,0) 42%);pointer-events:none;z-index:4}
+
+/* révélations au défilement : glissé + léger zoom + cascade */
+.rv{opacity:1;transform:none}
+@media (prefers-reduced-motion:no-preference){
+  .rv{opacity:.001;transform:translateY(28px) scale(.988);transition:opacity .72s var(--ease),transform .72s var(--ease);transition-delay:var(--d,0ms)}
+  .rv.shown{opacity:1;transform:none}
+}
+
+/* boutons : magnétiques + onde au clic */
+.btn{position:relative;overflow:hidden}
+.ripple{position:absolute;border-radius:50%;background:currentColor;opacity:.22;transform:scale(0);animation:rip .6s ease-out forwards;pointer-events:none}
+@keyframes rip{to{transform:scale(1);opacity:0}}
+
+/* bouton son flottant (verre iPhone) */
+.sfx-toggle{position:fixed;z-index:41;right:max(18px,env(safe-area-inset-right,0px));bottom:max(18px,env(safe-area-inset-bottom,0px));width:54px;height:54px;border-radius:50%;border:1px solid color-mix(in srgb,var(--ink) 14%,transparent);background:color-mix(in srgb,var(--card) 66%,transparent);backdrop-filter:blur(16px) saturate(175%);-webkit-backdrop-filter:blur(16px) saturate(175%);box-shadow:0 12px 34px -14px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.45);display:grid;place-items:center;cursor:pointer;color:var(--ink);transition:transform .2s var(--ease),box-shadow .2s}
+.sfx-toggle:hover{transform:translateY(-2px) scale(1.05)}
+.sfx-toggle:active{transform:scale(.95)}
+.sfx-toggle svg{width:22px;height:22px;fill:currentColor}
+.sfx-toggle .eq{display:none;gap:3px;align-items:flex-end;height:18px}
+.sfx-toggle .eq i{width:3px;height:6px;background:var(--fx1);border-radius:2px;animation:eq 900ms ease-in-out infinite}
+.sfx-toggle .eq i:nth-child(2){animation-delay:150ms}
+.sfx-toggle .eq i:nth-child(3){animation-delay:320ms}
+@keyframes eq{0%,100%{height:5px}50%{height:17px}}
+.sfx-toggle.on .eq{display:flex}.sfx-toggle.on svg{display:none}
+.sfx-toggle.hint::before{content:"";position:absolute;inset:-1px;border-radius:50%;box-shadow:0 0 0 0 color-mix(in srgb,var(--fx1) 50%,transparent);animation:ring 2.4s ease-out infinite}
+@keyframes ring{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--fx1) 48%,transparent)}70%,100%{box-shadow:0 0 0 14px transparent}}
+@media (prefers-reduced-motion:reduce){.sfx-toggle.hint::before,.sfx-toggle .eq i{animation:none}}
 </style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="berodak-goo"><feGaussianBlur in="SourceGraphic" stdDeviation="12" result="b"/><feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -9" result="g"/><feBlend in="SourceGraphic" in2="g"/></filter></defs></svg>
+<div class="sbar" id="sbar" aria-hidden="true"></div>
+<button class="sfx-toggle hint" id="sfx" aria-pressed="false" aria-label="Activer la musique d'ambiance et les sons">
+  <svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
+  <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+</button>
 
 <nav id="nav"><div class="in">
   <a class="brand" href="#top"><span class="dot" aria-hidden="true"></span>Berodak</a>
@@ -195,7 +260,9 @@ footer a:hover{color:var(--ink)}
 </div></nav>
 
 <main id="top">
-<header class="hero"><div class="in">
+<header class="hero">
+  <div class="blobs" aria-hidden="true"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span></div>
+  <div class="in">
   <div class="hero-copy">
   <span class="avail rv"><i aria-hidden="true"></i>Disponible pour de nouveaux projets</span>
   <h1 class="rv">Je mets les commerces de Cotonou <span class="u">en ligne</span>, et je les fais réserver.</h1>
@@ -406,4 +473,107 @@ requestAnimationFrame(drawArts);addEventListener("resize",drawArts);
 $("copy").onclick=async()=>{const t=$("num").textContent.trim();try{await navigator.clipboard.writeText(t);$("copied").textContent="Numéro copié ✓";}catch(e){const rg=document.createRange();rg.selectNodeContents($("num"));const sel=getSelection();sel.removeAllRanges();sel.addRange(rg);$("copied").textContent="Sélectionnez puis copiez le numéro";}};
 // smooth anchor scroll
 document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener("click",e=>{const id=a.getAttribute("href");if(id.length>1){const el=document.querySelector(id);if(el){e.preventDefault();el.scrollIntoView({behavior:R?"auto":"smooth",block:"start"});}}}));
+
+/* ============ FX : défilement · cascade · magnétique · son ============ */
+// cascade (stagger) sur les groupes révélés
+[".hero-copy",".projects",".services",".steps",".offers"].forEach(sel=>{
+  const p=document.querySelector(sel);if(!p)return;
+  [...p.children].filter(c=>c.classList.contains("rv")).forEach((c,i)=>c.style.setProperty("--d",(i*85)+"ms"));
+});
+
+// barre de progression + parallaxe
+const sbar=$("sbar"),blobs=document.querySelector(".blobs"),showc=document.querySelector(".showcase");
+const deskFx=matchMedia("(min-width:861px) and (pointer:fine)").matches&&!R;
+let ticking=false;
+function fxScroll(){
+  const h=document.documentElement,max=h.scrollHeight-h.clientHeight,p=max>0?scrollY/max:0;
+  if(sbar)sbar.style.width=(p*100)+"%";
+  if(deskFx){if(blobs)blobs.style.transform="translateY("+(scrollY*0.10)+"px)";if(showc)showc.style.transform="translateY("+(scrollY*-0.045)+"px)";}
+  ticking=false;
+}
+addEventListener("scroll",()=>{if(!ticking){ticking=true;requestAnimationFrame(fxScroll);}},{passive:true});fxScroll();
+
+// boutons magnétiques
+if(matchMedia("(pointer:fine)").matches&&!R){
+  document.querySelectorAll(".btn").forEach(b=>{
+    b.addEventListener("pointermove",e=>{const r=b.getBoundingClientRect();b.style.transform="translate("+((e.clientX-r.left-r.width/2)*.16)+"px,"+((e.clientY-r.top-r.height/2)*.22)+"px)";});
+    b.addEventListener("pointerleave",()=>{b.style.transform="";});
+  });
+}
+
+/* ---- moteur audio : jazz génératif + sons de clic (sans copyright) ---- */
+let AC,master,voiceBus,busDelay,on=false,loopT=null,nextTime=0,barIx=0,noiseBuf=null;
+const mtof=m=>440*Math.pow(2,(m-69)/12);
+const BAR=2.4;
+const prog=[
+  {bass:41,up:[57,60,64,67]}, // Fmaj9
+  {bass:38,up:[53,57,60,64]}, // Dm9
+  {bass:43,up:[58,62,65,69]}, // Gm9
+  {bass:36,up:[52,55,58,62]}  // C13
+];
+function initAudio(){
+  if(AC)return;
+  const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;
+  AC=new Ctx();
+  master=AC.createGain();master.gain.value=0;master.connect(AC.destination);
+  voiceBus=AC.createBiquadFilter();voiceBus.type="lowpass";voiceBus.frequency.value=2100;voiceBus.Q.value=.3;voiceBus.connect(master);
+  busDelay=AC.createDelay();busDelay.delayTime.value=0.34;
+  const fb=AC.createGain();fb.gain.value=0.26;const wet=AC.createGain();wet.gain.value=0.22;
+  voiceBus.connect(busDelay);busDelay.connect(fb);fb.connect(busDelay);busDelay.connect(wet);wet.connect(master);
+  noiseBuf=AC.createBuffer(1,AC.sampleRate*0.3,AC.sampleRate);
+  const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1);
+}
+function voice(freq,t,dur,vel,type){
+  const o=AC.createOscillator();o.type=type||"sine";o.frequency.value=freq;
+  const g=AC.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vel,t+0.05);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.connect(g);g.connect(voiceBus);o.start(t);o.stop(t+dur+0.1);
+}
+function brush(t,vel){
+  const s=AC.createBufferSource();s.buffer=noiseBuf;
+  const bp=AC.createBiquadFilter();bp.type="bandpass";bp.frequency.value=5200;bp.Q.value=.8;
+  const g=AC.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vel,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+0.22);
+  s.connect(bp);bp.connect(g);g.connect(master);s.start(t);s.stop(t+0.3);
+}
+function scheduleBar(ch,t){
+  voice(mtof(ch.bass),t,BAR*0.92,.16,"triangle");
+  voice(mtof(ch.bass+12),t,BAR*0.9,.045,"sine");
+  [0.0,0.33,0.58,0.83].forEach((f,i)=>{
+    const tt=t+f*BAR;
+    ch.up.forEach(n=>voice(mtof(n)*(1+(Math.random()-.5)*0.004),tt,0.55,.05,"sine"));
+    if(i%2)brush(tt,.012);
+  });
+  if(barIx%2===0){const mel=ch.up[1+Math.floor(Math.random()*2)]+12;voice(mtof(mel),t+0.58*BAR,0.9,.06,"sine");}
+}
+function scheduler(){while(nextTime<AC.currentTime+0.4){scheduleBar(prog[barIx%prog.length],nextTime);nextTime+=BAR;barIx++;}}
+function blip(){
+  if(!on||!AC)return;const t=AC.currentTime;
+  const o=AC.createOscillator();o.type="sine";o.frequency.setValueAtTime(900,t);o.frequency.exponentialRampToValueAtTime(430,t+0.06);
+  const g=AC.createGain();g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(.08,t+0.005);g.gain.exponentialRampToValueAtTime(0.0001,t+0.1);
+  o.connect(g);g.connect(master);o.start(t);o.stop(t+0.12);
+}
+const sfx=$("sfx");
+function soundOn(){
+  initAudio();if(!AC)return;if(AC.state==="suspended")AC.resume();
+  on=true;master.gain.cancelScheduledValues(AC.currentTime);master.gain.setValueAtTime(master.gain.value,AC.currentTime);master.gain.linearRampToValueAtTime(0.13,AC.currentTime+1.2);
+  nextTime=AC.currentTime+0.15;barIx=0;if(!loopT)loopT=setInterval(scheduler,70);
+  sfx.classList.add("on");sfx.classList.remove("hint");sfx.setAttribute("aria-pressed","true");
+  try{localStorage.setItem("berodakSound","1")}catch(e){}
+}
+function soundOff(){
+  on=false;if(master)master.gain.linearRampToValueAtTime(0,AC.currentTime+0.4);
+  if(loopT){clearInterval(loopT);loopT=null;}
+  sfx.classList.remove("on");sfx.setAttribute("aria-pressed","false");
+  try{localStorage.setItem("berodakSound","0")}catch(e){}
+}
+sfx.addEventListener("click",()=>{on?soundOff():soundOn();});
+
+// onde + son au clic sur les éléments interactifs
+function ripple(e,el){const r=el.getBoundingClientRect(),d=Math.max(r.width,r.height),s=document.createElement("span");s.className="ripple";s.style.width=s.style.height=d+"px";s.style.left=((e.clientX||r.left+r.width/2)-r.left-d/2)+"px";s.style.top=((e.clientY||r.top+r.height/2)-r.top-d/2)+"px";el.appendChild(s);setTimeout(()=>s.remove(),620);}
+document.querySelectorAll(".btn").forEach(el=>el.addEventListener("pointerdown",e=>{ripple(e,el);blip();}));
+document.querySelectorAll(".plink,#copy,.sfx-toggle,.navlinks a").forEach(el=>el.addEventListener("pointerdown",blip));
+
+// préférence son mémorisée (l'autoplay nécessite un geste)
+let pref=null;try{pref=localStorage.getItem("berodakSound")}catch(e){}
+if(pref==="0")sfx.classList.remove("hint");
+if(pref==="1"){const g=()=>{soundOn();removeEventListener("pointerdown",g);removeEventListener("keydown",g);};addEventListener("pointerdown",g);addEventListener("keydown",g);}
 </script>
