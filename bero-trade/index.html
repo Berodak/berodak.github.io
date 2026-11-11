@@ -99,6 +99,17 @@ button{font:inherit;color:inherit;cursor:pointer}
 .spark{width:100%;height:42px;display:block}
 .spark path{fill:none;stroke:var(--side);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
 .spark .area{fill:var(--side);opacity:.12;stroke:none}
+.sim{border-radius:14px;padding:.5rem .75rem;background:rgba(255,255,255,.06)}
+.sim summary{font-size:.9375rem}
+.sim-f{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:.5rem 0}
+.sim-f label{display:grid;gap:.25rem;font-size:.75rem;color:var(--muted)}
+.sim-f input,.sim-f select{font:inherit;font-size:1rem;color:var(--ink);background:rgba(10,19,48,.6);border:1px solid var(--edge);border-radius:10px;padding:.5rem .625rem;min-height:44px;width:100%}
+.sim-r{display:grid;grid-template-columns:repeat(3,1fr);gap:.375rem;margin:0}
+.sim-r div{text-align:center;border-radius:10px;padding:.375rem .25rem;background:rgba(255,255,255,.05)}
+.sim-r dt{font-size:.6875rem;color:var(--muted)}
+.sim-r dd{margin:0;font:800 1.0625rem/1.2 var(--display)}
+.sim-r .g{color:var(--buy)} .sim-r .l{color:var(--sell)}
+.sim-n{font-size:.75rem;color:var(--muted);margin:.375rem 0 0}
 .choice{display:flex;gap:.5rem;margin-top:auto}
 .choice .btn{flex:1}
 .taken{font-size:.875rem;color:var(--muted)}
@@ -449,6 +460,19 @@ if (typeof document !== "undefined") (() => {
           <li>À fermer au plus tard ${esc(dayHm(pl.until * 1000))}.</li>
         </ul>
       </div>
+      <details class="sim" data-key="${key}">
+        <summary>Simuler un gain</summary>
+        <div class="sim-f">
+          <label>Montant en $<input type="number" inputmode="decimal" min="0" step="any" value="${simAmt}" data-sim="amt"></label>
+          <label>Ce montant est…<select data-sim="mode">
+            <option value="risk"${simMode === "risk" ? " selected" : ""}>Ce que je perds au stop</option>
+            <option value="cash"${simMode === "cash" ? " selected" : ""}>Ma mise, sans levier</option>
+            <option value="lev"${simMode === "lev" ? " selected" : ""}>Ma mise, levier ×50</option>
+          </select></label>
+        </div>
+        <dl class="sim-r" data-sim="out"></dl>
+        <p class="sim-n" data-sim="note"></p>
+      </details>
       ${ch === "pris" ? `<p class="taken">Vous avez pris ce trade. Placez-le sur votre plateforme avec ces niveaux.</p><div class="choice"><button class="btn" type="button" data-undo="${key}">Annuler mon choix</button></div>`
         : ch === "passe" ? `<p class="taken">Vous avez passé ce trade.</p><div class="choice"><button class="btn" type="button" data-undo="${key}">Revoir</button></div>`
         : `<div class="choice"><button class="btn go" type="button" data-take="${key}">Je prends</button><button class="btn" type="button" data-skip="${key}">Je passe</button></div>`}
@@ -475,6 +499,27 @@ if (typeof document !== "undefined") (() => {
     $("#sub").textContent = !reports.some(r => r.state !== "erreur") ? "Kraken, la source des prix, ne répond pas. Vérifiez la connexion, puis actualisez."
       : `${conf ? `${conf} signal${conf > 1 ? "s" : ""} confirmé${conf > 1 ? "s" : ""}, le reste en simple tendance. ` : "Aucun signal confirmé : les fiches suivent la tendance, c'est plus risqué. "}Il faut gagner au moins ${num(BE, 0)} % des trades pour être rentable avec ces règles. C'est vous qui choisissez.`;
   }
+  let simAmt = store.get("bt.simAmt", 10), simMode = store.get("bt.simMode", "risk");
+  /* Gain si l'objectif est atteint, perte si le stop est touché, moyenne d'après le passé */
+  function simulate(box) {
+    const key = box.dataset.key, id = key.split(":")[0], r = reports.find(x => x.id === id), p = r && proposal(r); if (!p) return;
+    const amt = Math.max(0, parseFloat(box.querySelector("[data-sim=amt]").value) || 0), mode = box.querySelector("[data-sim=mode]").value;
+    const pl = p.plan, move = Math.abs(pl.tp - pl.entry);
+    let loss, gain, note;
+    if (mode === "risk") { loss = amt; gain = amt * move / pl.dist; note = `La taille du trade est calculée pour perdre ${num(amt, 2)} $ au stop.`; }
+    else { const units = amt * (mode === "lev" ? 50 : 1) / pl.entry; loss = units * pl.dist; gain = units * move;
+      note = mode === "lev" ? `Position de ${num(amt * 50, 0)} $ (${units.toLocaleString("fr-FR", { maximumSignificantDigits: 3 })} unités).${loss > amt ? " Attention : la perte au stop dépasse votre mise, le compte serait vidé avant." : ""}` : `${units.toLocaleString("fr-FR", { maximumSignificantDigits: 3 })} unités achetées ou vendues.`; }
+    const avg = p.rec.avg * loss, sg = x => (x >= 0 ? "+" : "−") + num(Math.abs(x), 2) + " $";
+    box.querySelector("[data-sim=out]").innerHTML = `<div><dt>Objectif atteint</dt><dd class="g">${sg(gain)}</dd></div><div><dt>Stop touché</dt><dd class="l">${sg(-Math.min(loss, mode === "lev" ? amt : loss))}</dd></div><div><dt>En moyenne</dt><dd>${sg(avg)}</dd></div>`;
+    box.querySelector("[data-sim=note]").textContent = `${note} « En moyenne » : ce qu'un trade de ce type a rapporté en moyenne par le passé (${Math.round(winPct(p.rec))} % de gagnants), frais compris. Ce n'est pas une promesse.`;
+  }
+  document.addEventListener("input", e => {
+    const box = e.target.closest(".sim"); if (!box) return;
+    if (e.target.dataset.sim === "amt") { simAmt = parseFloat(e.target.value) || 0; store.set("bt.simAmt", simAmt); }
+    if (e.target.dataset.sim === "mode") { simMode = e.target.value; store.set("bt.simMode", simMode); }
+    simulate(box);
+  });
+  document.addEventListener("toggle", e => { if (e.target.classList && e.target.classList.contains("sim") && e.target.open) simulate(e.target); }, true);
   function choose(key, c) {
     if (c) choices[key] = { c, at: Date.now() }; else delete choices[key];
     const cut = Date.now() - 10 * 864e5; for (const k in choices) if (choices[k].at < cut) delete choices[k];
