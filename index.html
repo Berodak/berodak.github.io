@@ -326,6 +326,22 @@ html{scroll-behavior:smooth}
 /* survol des réseaux / pastilles footer */
 .fpills a{transition:transform .2s var(--ease),filter .2s}
 .fpills a:hover{transform:translateY(-3px) scale(1.04)}
+
+/* ====== services : couleur par catégorie + animation "deal" ====== */
+.svc-card{box-shadow:0 30px 60px -30px rgba(10,17,36,.45)}
+.svc-card.dk{color:#2A1E00}
+.svc-card.dk .htitle{opacity:.78}
+.svc-card.dk .hdesc{color:rgba(42,30,0,.84)}
+.svc-card.dk .hnum{opacity:.9}
+.svc-card.dk .chips span{background:rgba(0,0,0,.08);border-color:rgba(0,0,0,.18)}
+.svc-detail .back,.svc-detail .back2{transition:opacity .5s var(--ease),background .4s}
+@keyframes skxDeal{0%{transform:rotate(-7deg) translateY(16px) scale(.94);opacity:0}55%{opacity:1}100%{transform:none;opacity:1}}
+.svc-card.deal{animation:skxDeal .5s var(--ease)}
+@keyframes skxBack{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:none}}
+.svc-detail.deal .back{animation:skxBack .5s var(--ease) .04s both}
+.svc-detail.deal .back2{animation:skxBack .5s var(--ease) .1s both}
+.svc-item{transition:background .3s var(--ease),transform .22s var(--ease),color .3s}
+.svc-item.on{transition:background .3s var(--ease),transform .25s var(--ease),box-shadow .3s}
 </style>
 
 <div class="sbar" id="sbar" aria-hidden="true"></div>
@@ -508,16 +524,38 @@ const SERVICES=[
   {n:"Tableau de bord",d:"Vous suivez vos réservations, vos acomptes et votre chiffre d'affaires depuis votre téléphone.",c:["Réservations","Acomptes","Chiffre d'affaires"]}
 ];
 let svcActive=0;
+// une couleur par catégorie : dégradé de la carte, 2 cartes empilées derrière, pastille active
+const THEMES=[
+  {g:["#2F6BFF","#245CE8"],b1:"#5B3DF5",b2:"#FFC21A",dark:false},
+  {g:["#5B3DF5","#4324C9"],b1:"#2F6BFF",b2:"#FF3D6E",dark:false},
+  {g:["#FFB020","#F08A00"],b1:"#2F6BFF",b2:"#5B3DF5",dark:true},
+  {g:["#FF3D6E","#E62E5B"],b1:"#5B3DF5",b2:"#FFC21A",dark:false},
+  {g:["#17A4E0","#0E7FC0"],b1:"#5B3DF5",b2:"#FFC21A",dark:false},
+  {g:["#12B39E","#0C8C7C"],b1:"#2F6BFF",b2:"#FF3D6E",dark:false}
+];
 function renderSvcList(){
   $("svc-list").innerHTML=SERVICES.map((s,i)=>`<button class="svc-item ${i===svcActive?"on":""}" data-svc="${i}" role="tab" aria-selected="${i===svcActive}"><span class="no">0${i+1}</span><span class="nm">${s.n}</span></button>`).join("");
+  const act=$("svc-list").querySelector(".svc-item.on"),t=THEMES[svcActive];
+  if(act){act.style.background="linear-gradient(135deg,"+t.g[0]+","+t.g[1]+")";act.style.boxShadow="0 18px 34px -18px "+t.g[0];
+    const col=t.dark?"#2A1E00":"#fff";act.style.color=col;act.querySelector(".nm").style.color=col;
+    act.querySelector(".no").style.background=t.dark?"rgba(0,0,0,.14)":"rgba(255,255,255,.22)";act.querySelector(".no").style.color=col;}
 }
 function renderSvcCard(){
-  const s=SERVICES[svcActive];
-  $("svc-card").innerHTML=`<div class="hnum">0${svcActive+1}</div><div class="htitle">${s.n}</div><p class="hdesc">${s.d}</p><div class="chips">${s.c.map(x=>`<span>${x}</span>`).join("")}</div>`;
+  const s=SERVICES[svcActive],t=THEMES[svcActive],card=$("svc-card");
+  card.innerHTML=`<div class="hnum">0${svcActive+1}</div><div class="htitle">${s.n}</div><p class="hdesc">${s.d}</p><div class="chips">${s.c.map(x=>`<span>${x}</span>`).join("")}</div>`;
+  card.style.background="linear-gradient(150deg,"+t.g[0]+","+t.g[1]+")";
+  card.style.boxShadow="0 30px 60px -30px "+t.g[0];
+  card.classList.toggle("dk",t.dark);
+  const det=card.closest(".svc-detail");
+  det.querySelector(".back").style.background=t.b1;
+  det.querySelector(".back2").style.background=t.b2;
+  // rejoue l'animation "deal"
+  card.classList.remove("deal");det.classList.remove("deal");void card.offsetWidth;card.classList.add("deal");det.classList.add("deal");
 }
 renderSvcList();renderSvcCard();
-$("svc-list").addEventListener("click",e=>{const b=e.target.closest("[data-svc]");if(!b)return;svcActive=+b.dataset.svc;renderSvcList();renderSvcCard();blip();});
-$("svc-list").addEventListener("mouseover",e=>{const b=e.target.closest("[data-svc]");if(!b||+b.dataset.svc===svcActive)return;svcActive=+b.dataset.svc;renderSvcList();renderSvcCard();});
+function pickSvc(i){if(i===svcActive)return;svcActive=i;renderSvcList();renderSvcCard();}
+$("svc-list").addEventListener("click",e=>{const b=e.target.closest("[data-svc]");if(!b)return;const changed=+b.dataset.svc!==svcActive;pickSvc(+b.dataset.svc);if(changed)blip();});
+$("svc-list").addEventListener("mouseover",e=>{const b=e.target.closest("[data-svc]");if(!b)return;pickSvc(+b.dataset.svc);});
 
 /* ---- reveal + stagger ---- */
 [".hero-copy",".steps",".proj",".offers"].forEach(sel=>{const p=document.querySelector(sel);if(!p)return;[...p.children].filter(c=>c.classList.contains("rv")).forEach((c,i)=>c.style.setProperty("--d",(i*85)+"ms"));});
