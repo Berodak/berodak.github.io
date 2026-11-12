@@ -335,11 +335,10 @@ html{scroll-behavior:smooth}
 .svc-card.dk .hnum{opacity:.9}
 .svc-card.dk .chips span{background:rgba(0,0,0,.08);border-color:rgba(0,0,0,.18)}
 .svc-detail .back,.svc-detail .back2{transition:opacity .5s var(--ease),background .4s}
-@keyframes skxDeal{0%{transform:rotate(-7deg) translateY(16px) scale(.94);opacity:0}55%{opacity:1}100%{transform:none;opacity:1}}
-.svc-card.deal{animation:skxDeal .5s var(--ease)}
-@keyframes skxBack{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:none}}
-.svc-detail.deal .back{animation:skxBack .5s var(--ease) .04s both}
-.svc-detail.deal .back2{animation:skxBack .5s var(--ease) .1s both}
+.svc-card{transition:background .6s var(--ease),box-shadow .6s var(--ease)}
+@keyframes softIn{0%{opacity:0;transform:translateY(9px)}100%{opacity:1;transform:none}}
+.svc-inner.in{animation:softIn .55s var(--ease)}
+.svc-detail .back,.svc-detail .back2{transition:opacity .6s var(--ease),background .6s var(--ease),transform .6s var(--ease)}
 .svc-item{transition:background .3s var(--ease),transform .22s var(--ease),color .3s}
 .svc-item.on{transition:background .3s var(--ease),transform .25s var(--ease),box-shadow .3s}
 </style>
@@ -533,27 +532,32 @@ const THEMES=[
   {g:["#17A4E0","#0E7FC0"],b1:"#5B3DF5",b2:"#FFC21A",dark:false},
   {g:["#12B39E","#0C8C7C"],b1:"#2F6BFF",b2:"#FF3D6E",dark:false}
 ];
-function renderSvcList(){
-  $("svc-list").innerHTML=SERVICES.map((s,i)=>`<button class="svc-item ${i===svcActive?"on":""}" data-svc="${i}" role="tab" aria-selected="${i===svcActive}"><span class="no">0${i+1}</span><span class="nm">${s.n}</span></button>`).join("");
-  const act=$("svc-list").querySelector(".svc-item.on"),t=THEMES[svcActive];
-  if(act){act.style.background="linear-gradient(135deg,"+t.g[0]+","+t.g[1]+")";act.style.boxShadow="0 18px 34px -18px "+t.g[0];
-    const col=t.dark?"#2A1E00":"#fff";act.style.color=col;act.querySelector(".nm").style.color=col;
-    act.querySelector(".no").style.background=t.dark?"rgba(0,0,0,.14)":"rgba(255,255,255,.22)";act.querySelector(".no").style.color=col;}
+function buildSvcList(){
+  $("svc-list").innerHTML=SERVICES.map((s,i)=>`<button class="svc-item" data-svc="${i}" role="tab" aria-selected="false"><span class="no">0${i+1}</span><span class="nm">${s.n}</span></button>`).join("");
+}
+function applyActive(){
+  $("svc-list").querySelectorAll(".svc-item").forEach((el,i)=>{
+    const on=i===svcActive,t=THEMES[i],no=el.querySelector(".no"),nm=el.querySelector(".nm");
+    el.classList.toggle("on",on);el.setAttribute("aria-selected",on);
+    if(on){const col=t.dark?"#2A1E00":"#fff";
+      el.style.background="linear-gradient(135deg,"+t.g[0]+","+t.g[1]+")";el.style.boxShadow="0 18px 34px -18px "+t.g[0];
+      el.style.color=col;nm.style.color=col;no.style.background=t.dark?"rgba(0,0,0,.14)":"rgba(255,255,255,.22)";no.style.color=col;
+    }else{el.style.background="";el.style.boxShadow="";el.style.color="";nm.style.color="";no.style.background="";no.style.color="";}
+  });
 }
 function renderSvcCard(){
   const s=SERVICES[svcActive],t=THEMES[svcActive],card=$("svc-card");
-  card.innerHTML=`<div class="hnum">0${svcActive+1}</div><div class="htitle">${s.n}</div><p class="hdesc">${s.d}</p><div class="chips">${s.c.map(x=>`<span>${x}</span>`).join("")}</div>`;
   card.style.background="linear-gradient(150deg,"+t.g[0]+","+t.g[1]+")";
   card.style.boxShadow="0 30px 60px -30px "+t.g[0];
   card.classList.toggle("dk",t.dark);
   const det=card.closest(".svc-detail");
   det.querySelector(".back").style.background=t.b1;
   det.querySelector(".back2").style.background=t.b2;
-  // rejoue l'animation "deal"
-  card.classList.remove("deal");det.classList.remove("deal");void card.offsetWidth;card.classList.add("deal");det.classList.add("deal");
+  card.innerHTML='<div class="svc-inner">'+`<div class="hnum">0${svcActive+1}</div><div class="htitle">${s.n}</div><p class="hdesc">${s.d}</p><div class="chips">${s.c.map(x=>`<span>${x}</span>`).join("")}</div>`+'</div>';
+  const inner=card.querySelector(".svc-inner");inner.classList.remove("in");void inner.offsetWidth;inner.classList.add("in");
 }
-renderSvcList();renderSvcCard();
-function pickSvc(i){if(i===svcActive)return;svcActive=i;renderSvcList();renderSvcCard();}
+buildSvcList();applyActive();renderSvcCard();
+function pickSvc(i){if(i===svcActive)return;svcActive=i;applyActive();renderSvcCard();}
 $("svc-list").addEventListener("click",e=>{const b=e.target.closest("[data-svc]");if(!b)return;const changed=+b.dataset.svc!==svcActive;pickSvc(+b.dataset.svc);if(changed)blip();});
 $("svc-list").addEventListener("mouseover",e=>{const b=e.target.closest("[data-svc]");if(!b)return;pickSvc(+b.dataset.svc);});
 
