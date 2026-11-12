@@ -385,6 +385,27 @@ html{scroll-behavior:smooth}
 .techrow span:hover{transform:translateY(-3px);box-shadow:0 14px 26px -14px rgba(47,107,255,.5)}
 .techrow span b{color:var(--blue);font-weight:700}
 .fpills a:nth-child(6){background:#12B39E;color:#fff}
+
+/* ====== Page À propos (détaillée, s'ouvre en overlay) ====== */
+.page-about{display:none;position:fixed;inset:0;z-index:70;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--bg);background-image:radial-gradient(60% 50% at 85% -5%,rgba(47,107,255,.12),transparent 60%),radial-gradient(50% 45% at 5% 8%,rgba(91,61,245,.1),transparent 60%),linear-gradient(180deg,#fff,var(--bg) 30%)}
+.page-about.open{display:block}
+.page-about>.in{padding-top:max(26px,env(safe-area-inset-top,0px));padding-bottom:80px}
+.pa-back{margin:0 0 30px;font-size:14px}
+.pa-back .ic{background:var(--navy);color:#fff}
+.pa-hero{display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center;margin-bottom:52px}
+.pa-hero h2{font-size:clamp(40px,7vw,78px);text-transform:uppercase}
+.pa-hero p{color:var(--muted);font-size:18px;margin-top:18px;max-width:42ch}
+.pa-photo .photo-tile{max-width:360px;margin-left:auto}
+.pa-lead{font-family:var(--display);font-weight:800;font-size:clamp(26px,4.2vw,46px);letter-spacing:-.02em;line-height:1.12;max-width:21ch;margin-bottom:36px;text-wrap:balance}
+.pa-cols{display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-bottom:48px}
+.pa-cols p{color:var(--muted);font-size:16.5px;line-height:1.66}
+.pa-cols p b{color:var(--ink);font-weight:600}
+.pa-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:30px 36px;padding:36px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:42px}
+.pa-meta span{display:block;font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin-bottom:8px}
+.pa-meta b{font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:-.01em;line-height:1.2}
+.pa-cta{display:flex;flex-wrap:wrap;gap:12px}
+@media (max-width:760px){.pa-hero{grid-template-columns:1fr;gap:26px}.pa-photo .photo-tile{margin:0 auto;max-width:230px}.pa-cols{grid-template-columns:1fr;gap:22px}.pa-meta{grid-template-columns:1fr 1fr;gap:26px}}
+@media (max-width:460px){.pa-meta{grid-template-columns:1fr}}
 </style>
 
 <div class="sbar" id="sbar" aria-hidden="true"></div>
@@ -417,7 +438,7 @@ html{scroll-behavior:smooth}
       <p class="desc rv">Étudiant en informatique — programmation C, web et cybersécurité. Je transforme aussi les salons, hôtels et restaurants en une vraie présence en ligne : réservation, menu, acompte Mobile Money. Du code propre jusqu'au client qui réserve.</p>
       <div class="hero-cta rv">
         <a class="btn btn-dark" href="#projets">Voir mes projets<span class="ic"><svg class="arr" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg></span></a>
-        <a class="btn btn-white" href="#services">En savoir plus<span class="ic"><svg class="arr" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <button class="btn btn-white" id="ensavoir">En savoir plus<span class="ic"><svg class="arr" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
       </div>
     </div>
     <div class="cards rv" aria-hidden="true">
@@ -623,6 +644,34 @@ Player 1 (<span class="p">champ1</span>) <span class="g">wins</span> <span class
 </div></section>
 </main>
 
+<div class="page-about" id="aboutfull" role="dialog" aria-label="À propos de Berodak Elisé"><div class="in">
+  <button class="btn btn-white pa-back" id="pa-back"><span class="ic"><svg class="arr" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></span>Retour</button>
+  <div class="pa-hero">
+    <div class="pa-copy">
+      <h2>Moi, c'est <span class="mark blue">Elisé</span></h2>
+      <p>Étudiant en informatique à Epitech Bénin, passionné de programmation C, de cybersécurité et du web. À côté, je mets les commerces de Cotonou en ligne.</p>
+    </div>
+    <div class="pa-photo"><div class="photo-tile" aria-hidden="true"><b>B</b><small>Kouarfate Berodak Elisé</small></div></div>
+  </div>
+  <h3 class="pa-lead">Mon fil conducteur : <span class="mark yellow">apprendre en construisant</span>, du code jusqu'au client.</h3>
+  <div class="pa-cols">
+    <p>Mon parcours, c'est d'abord le <b>code</b>. À Epitech Bénin, je construis des projets système en C — un minishell, une machine virtuelle, des outils Linux — et je me forme à la <b>cybersécurité</b> à travers des défis CTF : analyser un binaire, trouver une faille, comprendre comment les choses marchent en profondeur. J'aime la rigueur et les problèmes qui demandent de la patience.</p>
+    <p>En parallèle, j'applique tout ça au <b>concret</b> : je crée des présences en ligne pour les commerces de ma ville — salons, hôtels, restaurants. Une page claire, la réservation, l'acompte Mobile Money. Mon objectif : réunir la rigueur du développeur et l'utilité pour de vraies personnes, ici au Bénin. Du code propre jusqu'au client qui réserve.</p>
+  </div>
+  <div class="pa-meta">
+    <div><span>Localisation</span><b>Cotonou · Abomey-Calavi, Bénin</b></div>
+    <div><span>Formation</span><b>Epitech Bénin — Informatique</b></div>
+    <div><span>Ce que je fais</span><b>Dev &amp; présence en ligne pour commerces</b></div>
+    <div><span>Niveau</span><b>Bachelor — 1<sup>re</sup> année</b></div>
+    <div><span>Langues</span><b>Français courant · Anglais intermédiaire</b></div>
+    <div><span>Centres d'intérêt</span><b>Code, cybersécurité, sport, jeux vidéo</b></div>
+  </div>
+  <div class="pa-cta">
+    <a class="btn btn-dark" href="https://berodak.github.io/cv-berodak-elise.pdf" target="_blank" rel="noopener" download>Télécharger mon CV<span class="ic"><svg class="arr" viewBox="0 0 24 24" style="stroke-width:2.4"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg></span></a>
+    <button class="btn btn-white" id="pa-contact">Me contacter<span class="ic"><svg class="arr" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+  </div>
+</div></div>
+
 <footer><div class="in">
   <div class="ftop">
     <div class="fbrand">
@@ -745,6 +794,15 @@ if(matchMedia("(pointer:fine)").matches&&!R){
 /* ---- copier numéro + ancres douces ---- */
 $("copy").onclick=async()=>{const t=$("num").textContent.trim();try{await navigator.clipboard.writeText(t);$("copied").textContent="Numéro copié ✓";}catch(e){const rg=document.createRange();rg.selectNodeContents($("num"));const sel=getSelection();sel.removeAllRanges();sel.addRange(rg);$("copied").textContent="Sélectionnez puis copiez le numéro";}};
 document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener("click",e=>{const id=a.getAttribute("href");if(id.length>1){const el=document.querySelector(id);if(el){e.preventDefault();el.scrollIntoView({behavior:R?"auto":"smooth",block:"start"});}}}));
+
+/* ---- page À propos détaillée (overlay) ---- */
+const aboutFull=$("aboutfull");
+function openAbout(){aboutFull.classList.add("open");aboutFull.scrollTop=0;document.documentElement.style.overflow="hidden";}
+function closeAbout(){aboutFull.classList.remove("open");document.documentElement.style.overflow="";}
+$("ensavoir").addEventListener("click",openAbout);
+$("pa-back").addEventListener("click",closeAbout);
+$("pa-contact").addEventListener("click",()=>{closeAbout();setTimeout(()=>{const el=document.getElementById("contact");if(el)el.scrollIntoView({behavior:R?"auto":"smooth"});},70);});
+addEventListener("keydown",e=>{if(e.key==="Escape"&&aboutFull.classList.contains("open"))closeAbout();});
 
 /* ---- onde + son au clic ---- */
 function ripple(e,el){const r=el.getBoundingClientRect(),d=Math.max(r.width,r.height),s=document.createElement("span");s.className="ripple";s.style.width=s.style.height=d+"px";s.style.left=((e.clientX||r.left+r.width/2)-r.left-d/2)+"px";s.style.top=((e.clientY||r.top+r.height/2)-r.top-d/2)+"px";el.appendChild(s);setTimeout(()=>s.remove(),620);}
